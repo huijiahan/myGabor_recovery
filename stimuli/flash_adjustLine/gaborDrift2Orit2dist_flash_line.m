@@ -85,7 +85,7 @@ spaceKey = KbName('space');
 % Experiment setup
 % fprintf('subject_name is',);
 
-trialNumber = 48; % have to triple times of 8 which is the number of the interval time and 9 conditions
+trialNumber = 32; % have to triple times of 8 which is the number of the interval time and 9 conditions
 blockNumber = 6;
 % Response start matrix setting
 all = RespStartMatrix();
