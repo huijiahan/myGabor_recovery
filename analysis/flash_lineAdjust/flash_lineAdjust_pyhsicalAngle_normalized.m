@@ -10,7 +10,7 @@ mark = 1;
 if mark == 1
     cd '../../data/GaborDrift/flash_lineAdjust'
     % 0.5 dva
-    sbjnames = {'renshiwen'}; % 'linweiru','guofanhua','wangzetong','huijiahan664'，'sunliwei'
+    sbjnames = {'huijiahan'}; % 'linweiru','guofanhua','wangzetong','huijiahan664'，'sunliwei'
     lineAngleColumn = 7;
 elseif mark == 2
     % 1.5 dva
