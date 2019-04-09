@@ -4,7 +4,7 @@
 clear all;
 addpath '../../function';
 % decide analysis which distance
-mark = 1;
+mark = 2;
 
 % eachPercLoc = input('>>>> show each perceived location? (e.g.: n or y):  ','s');
 eachPercLoc = 'n';
@@ -17,9 +17,9 @@ if mark == 1
     
     
 elseif mark == 2
-    cd '../../data/GaborDrift/flash_lineAdjust/circle_control'
-    sbjnames = {'mert'};
-    lineAngleColumn = 6;
+    cd '../../data/GaborDrift/flash_lineAdjust/percLocaTest/before_tan_change'
+    sbjnames = {'jiangyong'};
+    lineAngleColumn = 7;
     
     % for test gabor line adjust
 elseif mark == 3
@@ -103,8 +103,8 @@ set(gca,'XAxisLocation','top','YAxisLocation','left','ydir','reverse');
 
 
 
-LineDegree10dva_right = [0.3229    0.3142   -0.2967   -0.8028   -0.6283   -0.8989   -1.8588   -2.2078]/18;
-LineDegree10dva_left = [1.6319    1.0210   -0.2705   -0.0960   -1.0210   -1.1781   -2.0682   -2.0420]/18;
+% LineDegree10dva_right = [0.3229    0.3142   -0.2967   -0.8028   -0.6283   -0.8989   -1.8588   -2.2078]/18;
+% LineDegree10dva_left = [1.6319    1.0210   -0.2705   -0.0960   -1.0210   -1.1781   -2.0682   -2.0420]/18;
 
 % rightward    leftward
 lineLengthDegree = 3.5;
