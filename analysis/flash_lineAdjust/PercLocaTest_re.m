@@ -4,7 +4,7 @@
 clear all;
 addpath '../../function';
 % decide analysis which distance
-mark = 2;
+mark = 1;
 
 % eachPercLoc = input('>>>> show each perceived location? (e.g.: n or y):  ','s');
 eachPercLoc = 'n';
@@ -12,7 +12,7 @@ eachPercLoc = 'n';
 % for test flash apparent motion line adjust
 if mark == 1
     cd '../../data/GaborDrift/flash_lineAdjust/percLocaTest'
-    sbjnames = {'guofanhua'}; % 'huijiahan','lucy','xiahuan','gaoyige'
+    sbjnames = {'huijiahan'}; % 'huijiahan','lucy','xiahuan','gaoyige'
     lineAngleColumn = 7;
     
     
