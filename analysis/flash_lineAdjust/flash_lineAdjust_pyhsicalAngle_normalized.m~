@@ -119,16 +119,21 @@ LineAngle_ave = [LineDegree10dva_right LineDegree10dva_left]/(trialNumPerConditi
 for delay = 1: length(intervalTimesMatSingle)
     for j = 1:size(LineAngle_ave,2)
         if j == 1 % rightward
-            Perc_prop_temp(delay,j) = 1/2 + LineAngle_ave(delay,j)/(ang2radi(meanSubIlluDegree(j)));
-        elseif j == 2 % leftward
-            Perc_prop_temp(delay,j) = 1/2 - LineAngle_ave(delay,j)/(ang2radi(meanSubIlluDegree(j)));
+            
+                Physi_prop_temp(delay,j) = 1/2 + LineAngle_ave(delay,j)/(ang2radi(meanSubIlluDegree(j));
+                if j == 2 % leftward
+                 Physi_prop_temp(delay,j) = 1/2 - LineAngle_ave(delay,j)/(ang2radi(meanSubIlluDegree(j));   
+                
+                end
         end
     end
 end
+            
 
+Physi_prop_temp = [LineAngle_ave(:,1)/(ang2radi(meanSubIlluDegree(1)/2))  LineAngle_ave(:,2)/(ang2radi(meanSubIlluDegree(2)/2))];
 
-Perc_prop(:,sbjnum) = mean(Perc_prop_temp,2);
-plot(intervalTimesMatSingle*1000,(Perc_prop(:,sbjnum))*100);
+Physi_prop(:,sbjnum) = mean(Physi_prop_temp,2);
+plot(intervalTimesMatSingle*1000,(1-Physi_prop(:,sbjnum))*100);
 
 hold on;
 
@@ -147,8 +152,8 @@ end
 %     legend('7dva-leftward-S4','7dva-rightward-S4','10dva-leftward-S5','10dva-rightward-S5');
 %     legend(sbjnames);
 %     legend('7dva-huijiahan','10dva-huijiahan','7dva-sunliwei','10dva-sunliwei','7dva-S3','10dva-S3'); % ,'7dva-S2','10dva-S2'
-%     title(sbjnames,'FontSize',40);
-    title('perceived of apparent motion from the end of perceived path','FontSize',40);
+    title(sbjnames,'FontSize',40);
+%     title('perceived of apparent motion from the end of perceived path','FontSize',40);
     xlabel('interval time between illusion and test gabor(ms)','fontSize',30);
     ylabel({' << internal motion leftward      internal motion rightward  >> '},'FontSize',20);
 % %     legend(sbjnames,'Location','northeast')
