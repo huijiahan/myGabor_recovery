@@ -4,7 +4,7 @@
 clear all;
 addpath '../../function';
 % decide analysis which distance
-mark = 4;
+mark = 1;
 
 % eachPercLoc = input('>>>> show each perceived location? (e.g.: n or y):  ','s');
 eachPercLoc = 'n';
@@ -29,7 +29,7 @@ elseif mark == 3
     lineAngleColumn = 7;
 elseif mark == 4
     cd '../../data/GaborDrift/flash_lineAdjust/circle_control'
-    sbjnames = {'guofanhua'};
+    sbjnames = {'huijiahan'};
 end
 
 
@@ -103,29 +103,29 @@ set(gca,'XAxisLocation','top','YAxisLocation','left','ydir','reverse');
 
 
 % guofanhua
-% LineDegree10dva_right = [-2.4085   -2.0595   -1.5795   -3.0893   -1.7715   -1.5184   -1.9024   -2.2689]/18;
-% LineDegree10dva_left = [5.5763    4.9742    4.8607    5.5851    4.5990    5.4978    4.1452    4.5640]/18;
+LineDegree10dva_right = [-2.4085   -2.0595   -1.5795   -3.0893   -1.7715   -1.5184   -1.9024   -2.2689]/18;
+LineDegree10dva_left = [5.5763    4.9742    4.8607    5.5851    4.5990    5.4978    4.1452    4.5640]/18;
 
 % rightward    leftward
 lineLengthDegree = 3.5;
 lineLengthPixel = deg2pix(lineLengthDegree,viewingDistance,screenXpixels,displaywidth);
 
-colorMap_R = mycolorMap(10,4);
+colorMap_R = mycolorMap(10,1);
 colorMap_L = mycolorMap(10,2);
 
 % plot the adjustable line position of where the apparent motion from
-for number = 1:length(LineDegree10dva_right)
-    if LineDegree10dva_right(number) > 0
-        RealxDis_R(number) = lineLengthPixel * tan(LineDegree10dva_right(number));
-        graph(number) = plot((dotXpos_R_st + RealxDis_R(number)),dotYpos_R_end,'color',colorMap_R(number,:),'marker','o','MarkerFaceColor',colorMap_R(number,:));
-        hold on;
-    elseif  LineDegree10dva_right(number) < 0
-        RealxDis_R(number) = lineLengthPixel * tan(abs(LineDegree10dva_right(number)));
-        graph(number) = plot((dotXpos_R_st - RealxDis_R(number)),dotYpos_R_end,'color',colorMap_R(number,:),'marker','o','MarkerFaceColor',colorMap_R(number,:));
-        hold on;
-    end
-    
-end
+% for number = 1:length(LineDegree10dva_right)
+%     if LineDegree10dva_right(number) > 0
+%         RealxDis_R(number) = lineLengthPixel * tan(LineDegree10dva_right(number));
+%         graph(number) = plot((dotXpos_R_st + RealxDis_R(number)),dotYpos_R_end,'color',colorMap_R(number,:),'marker','o','MarkerFaceColor',colorMap_R(number,:));
+%         hold on;
+%     elseif  LineDegree10dva_right(number) < 0
+%         RealxDis_R(number) = lineLengthPixel * tan(abs(LineDegree10dva_right(number)));
+%         graph(number) = plot((dotXpos_R_st - RealxDis_R(number)),dotYpos_R_end,'color',colorMap_R(number,:),'marker','o','MarkerFaceColor',colorMap_R(number,:));
+%         hold on;
+%     end
+%     
+% end
 
 for number = 1:length(LineDegree10dva_left)
     if LineDegree10dva_left(number) > 0

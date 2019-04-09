@@ -4,7 +4,7 @@
 clear all;
 addpath '../../function';
 % decide analysis which distance
-mark = 1;
+mark = 2;
 
 % for test flash apparent motion line adjust
 if mark == 1
@@ -14,9 +14,9 @@ if mark == 1
     lineAngleColumn = 7;
 elseif mark == 2
     % 1.5 dva
-    cd '../../data/GaborDrift/flash_lineAdjust'
-    sbjnames = {'mert'}; 
-    lineAngleColumn = 6;
+    cd '../../data/GaborDrift/flash_lineAdjust/circle_control'
+    sbjnames = {'guofanhua'}; 
+    lineAngleColumn = 7;
     
     % for test gabor line adjust 
 elseif mark == 3
@@ -118,9 +118,9 @@ LineAngle_ave = [LineDegree10dva_right LineDegree10dva_left]/(trialNumPerConditi
 % from 1 is the proportion from perceived endpoint
 for j = 1:length(LineAngle_ave)
     if j == 1 
-        Physi_prop_temp(:,j) = - LineAngle_ave(:,j)/(ang2radi(meansubIlluDegree(j)/2));
+        Physi_prop_temp(:,j) = - LineAngle_ave(:,j)/(ang2radi(meanSubIlluDegree(j)/2));
     elseif j == 2 
-        Physi_prop_temp(:,j) = LineAngle_ave(:,j)/(ang2radi(meansubIlluDegree(j)/2));
+        Physi_prop_temp(:,j) = LineAngle_ave(:,j)/(ang2radi(meanSubIlluDegree(j)/2));
     end           
 end
 
