@@ -2,9 +2,10 @@
 % end of physical  and use function  RespMat2propor
 
 clear all;
+clear all;
 addpath '../../function';
 % decide analysis which distance
-mark = 4;
+mark = 1;
 
 % eachPercLoc = input('>>>> show each perceived location? (e.g.: n or y):  ','s');
 eachPercLoc = 'n';
@@ -29,7 +30,7 @@ elseif mark == 3
     lineAngleColumn = 7;
 elseif mark == 4
     cd '../../data/GaborDrift/flash_lineAdjust/circle_control'
-    sbjnames = {'guofanhua'};
+    sbjnames = {'huijiahan'};
 end
 
 
@@ -44,11 +45,6 @@ for sbjnum = 1:length(sbjnames)
     %     intervalTimesMatSingle = [0 0.05 0.1 0.15 0.2 0.25 0.3 0.35];% [0 50 100 150 200 250 300 350]* 0.001;
     gaborDistanceFromFixationDegree = [10];
     
-    [dotXpos_L_st,dotYpos_L_st] = findcenter(gaborStartLocation_L);
-    [dotXpos_L_end,dotYpos_L_end] = findcenter(gaborEndLocation_L);
-    
-    [dotXpos_R_st,dotYpos_R_st] = findcenter(gaborStartLocation_R);
-    [dotXpos_R_end,dotYpos_R_end] = findcenter(gaborEndLocation_R);
     
     dotXpos_L_Mat = [];
     dotYpos_L_Mat = [];
@@ -88,6 +84,10 @@ percLoca_L = plot(mean(dotXpos_L_Mat),mean(dotYpos_L_Mat),'ro', 'MarkerFaceColor
 hold on;
 percLoca_R = plot(mean(dotXpos_R_Mat),mean(dotYpos_R_Mat),'bo', 'MarkerFaceColor','b','MarkerSize', 10);
 
+[dotXpos_L_st,dotYpos_L_st] = findcenter(gaborStartLocation_L);
+[dotXpos_L_end,dotYpos_L_end] = findcenter(gaborEndLocation_L);
+[dotXpos_R_st,dotYpos_R_st] = findcenter(gaborStartLocation_R);
+[dotXpos_R_end,dotYpos_R_end] = findcenter(gaborEndLocation_R);
 
 originX_L = [dotXpos_L_st,dotXpos_L_end];
 originY_L = [dotYpos_L_st,dotYpos_L_end];
@@ -102,46 +102,65 @@ gaborTraj_R = plot(originX_R,originY_R,'b-','MarkerFaceColor','b');
 set(gca,'XAxisLocation','top','YAxisLocation','left','ydir','reverse');
 
 
-% guofanhua
-% LineDegree10dva_right = [-2.4085   -2.0595   -1.5795   -3.0893   -1.7715   -1.5184   -1.9024   -2.2689]/18;
-% LineDegree10dva_left = [5.5763    4.9742    4.8607    5.5851    4.5990    5.4978    4.1452    4.5640]/18;
 
 % rightward    leftward
 lineLengthDegree = 3.5;
 lineLengthPixel = deg2pix(lineLengthDegree,viewingDistance,screenXpixels,displaywidth);
 
-colorMap_R = mycolorMap(10,4);
-colorMap_L = mycolorMap(10,2);
+colorMap = mycolorMap(10,2);
 
-% plot the adjustable line position of where the apparent motion from
-for number = 1:length(LineDegree10dva_right)
-    if LineDegree10dva_right(number) > 0
-        RealxDis_R(number) = lineLengthPixel * tan(LineDegree10dva_right(number));
-        graph(number) = plot((dotXpos_R_st + RealxDis_R(number)),dotYpos_R_end,'color',colorMap_R(number,:),'marker','o','MarkerFaceColor',colorMap_R(number,:));
-        hold on;
-    elseif  LineDegree10dva_right(number) < 0
-        RealxDis_R(number) = lineLengthPixel * tan(abs(LineDegree10dva_right(number)));
-        graph(number) = plot((dotXpos_R_st - RealxDis_R(number)),dotYpos_R_end,'color',colorMap_R(number,:),'marker','o','MarkerFaceColor',colorMap_R(number,:));
-        hold on;
-    end
-    
-end
+lineLengthDegree = 3.5;
+lineLengthPixel = deg2pix(lineLengthDegree,viewingDistance,screenXpixels,displaywidth);
 
-for number = 1:length(LineDegree10dva_left)
-    if LineDegree10dva_left(number) > 0
-        RealxDis_L(number) = lineLengthPixel * tan(LineDegree10dva_left(number));
-        graph(number) = plot((dotXpos_L_st + RealxDis_L(number)),dotYpos_L_end,'color',colorMap_L(number,:),'marker','o','MarkerFaceColor',colorMap_L(number,:));
-        hold on;
-    elseif  LineDegree10dva_left(number) < 0
-        RealxDis_L(number) = lineLengthPixel * tan(abs(LineDegree10dva_left(number)));
-        graph(number) = plot((dotXpos_L_st - RealxDis_L(number)),dotYpos_L_end,'color',colorMap_L(number,:),'marker','o','MarkerFaceColor',colorMap_L(number,:));
-        hold on;
-    end
-    
-end
+% for delay1 = 1:length(LineAngle_ave(1))
+%     if LineAngle_ave(delay) > 0
+%         RealxDis(delay) = lineLengthPixel * tan(LineAngle_ave(delay));
+%         dotXpos_delay(delay) = dotXpos_st + RealxDis(delay);
+%     elseif  LineAngle_ave(delay) < 0
+%         RealxDis(delay) = lineLengthPixel * tan(abs(LineAngle_ave(delay)));
+%         dotXpos_delay(delay) = dotXpos_st - RealxDis(delay);
+%     end
+%     
+% end
+
+
+
+[dotXpos_R_delay,dotYpos_R_end] = LineAngle2Posi(LineAngle_ave(:,1),dotXpos_R_st,dotYpos_R_end,lineLengthPixel,colorMap);
+graph(1) = scatter(dotXpos_R_delay,dotYpos_R_end);% ,'color',colorMap,'marker','o','MarkerFaceColor',colorMap);
+hold on;
+[dotXpos_L_delay,dotYpos_L_end] = LineAngle2Posi(LineAngle_ave(:,2),dotXpos_L_st,dotYpos_L_end,lineLengthPixel,colorMap);
+graph(2) = scatter(dotXpos_L_delay,dotYpos_L_end);%,'color',colorMap,'marker','o','MarkerFaceColor',colorMap);
+grid on;
+
 
 
 
+% plot the adjustable line position of where the apparent motion from
+% for number = 1:length(LineDegree10dva_right)
+%     if LineDegree10dva_right(number) > 0
+%         RealxDis_R(number) = lineLengthPixel * tan(LineDegree10dva_right(number));
+%         graph(number) = plot((dotXpos_R_st + RealxDis_R(number)),dotYpos_R_end,'color',colorMap_R(number,:),'marker','o','MarkerFaceColor',colorMap_R(number,:));
+%         hold on;
+%     elseif  LineDegree10dva_right(number) < 0
+%         RealxDis_R(number) = lineLengthPixel * tan(abs(LineDegree10dva_right(number)));
+%         graph(number) = plot((dotXpos_R_st - RealxDis_R(number)),dotYpos_R_end,'color',colorMap_R(number,:),'marker','o','MarkerFaceColor',colorMap_R(number,:));
+%         hold on;
+%     end
+%     
+% end
+% 
+% for number = 1:length(LineDegree10dva_left)
+%     if LineDegree10dva_left(number) > 0
+%         RealxDis_L(number) = lineLengthPixel * tan(LineDegree10dva_left(number));
+%         graph(number) = plot((dotXpos_L_st + RealxDis_L(number)),dotYpos_L_end,'color',colorMap_L(number,:),'marker','o','MarkerFaceColor',colorMap_L(number,:));
+%         hold on;
+%     elseif  LineDegree10dva_left(number) < 0
+%         RealxDis_L(number) = lineLengthPixel * tan(abs(LineDegree10dva_left(number)));
+%         graph(number) = plot((dotXpos_L_st - RealxDis_L(number)),dotYpos_L_end,'color',colorMap_L(number,:),'marker','o','MarkerFaceColor',colorMap_L(number,:));
+%         hold on;
+%     end
+%     
+% end
 
 
 
@@ -152,8 +171,8 @@ end
 % legend(h,'centriod perceived location_','centriod perceived location-R','gabor physical path-L','gabor physical path-R','0 ms','50 ms','100 ms','150 ms','200 ms','250 ms','300 ms','350 ms','FontSize',10)
 % legend({'0 ms';'50 ms';'100 ms';'150 ms';'200 ms';'250 ms';'300 ms';'350 ms'});
 
-xlim([690 770]);
-ylim([300 460]);
+% xlim([690 770]);
+% ylim([300 460]);
 
 % title('percentage of apparent motion from the end of physical path(3.5dva)','FontSize',40);
 % xlabel('interval time between illusion and test gabor(ms)','fontSize',30);
