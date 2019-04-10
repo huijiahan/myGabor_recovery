@@ -10,17 +10,17 @@ addpath '../../function';
 Perc_prop_mark = input('>>>> plot each perceived proportion? (e.g.: n or y):  ','s');
 Perc_loca_mark = input('>>>> scatter perceived location? (e.g.: n or y):  ','s');
 
-mark = 1;
+mark = 2;
 % for test flash apparent motion line adjust
 if mark == 1
     cd '../../data/GaborDrift/flash_lineAdjust/main_AP'
     % 0.5 dva
-    sbjnames = {'huijiahan','guofanhua','lucy'}; % 'linweiru','guofanhua','wangzetong','huijiahan664'，'sunliwei'
+    sbjnames = {'guofanhua'}; % 'linweiru','guofanhua','wangzetong','huijiahan664'，'sunliwei'
     lineAngleColumn = 7;
 elseif mark == 2
     % 1.5 dva
     cd '../../data/GaborDrift/flash_lineAdjust/circle_control'
-    sbjnames = {'huijiahan','guofanhua','lucy'};
+    sbjnames = {'guofanhua'};
     lineAngleColumn = 7;
     
     % for test gabor line adjust
@@ -117,6 +117,7 @@ for sbjnum = 1:length(sbjnames)
     if Perc_loca_mark == 'y'
         [dotXpos_R_delay,dotYpos_R_end] = LineAngle2Posi(LineAngle_ave(:,1),dotXpos_R_st,dotYpos_R_end,lineLengthPixel);
         graph_R = scatter(dotXpos_R_delay,dotYpos_R_end);
+        % make the control plot different color
         if mark == 2
             graph_R = scatter(dotXpos_R_delay,dotYpos_R_end,'marker','o','MarkerFaceColor','g');
         end
@@ -126,9 +127,14 @@ for sbjnum = 1:length(sbjnames)
         if mark == 2
             graph_L = scatter(dotXpos_L_delay,dotYpos_L_end,'marker','o','MarkerFaceColor','m');
         end
-        title('apparent motion detect -- control','FontSize',30);
+        if mark == 1
+            title('apparent motion location detect','FontSize',30);
+        elseif mark ==  2
+            title('apparent motion location detect -- control','FontSize',30);
+        end
     end
-    
+%     legend(['S' num2str(sbjnum)]);
+    legend('S2');
     %%%--------------------------------------------------
     %     plot the perceived proportion
     %%%--------------------------------------------------
@@ -148,7 +154,7 @@ for sbjnum = 1:length(sbjnames)
     Perc_prop(:,sbjnum) = mean(Perc_prop_temp,2);
     Perc_prop_norm = mean(Perc_prop,2);
     
-    
+    figure;
     if Perc_prop_mark == 'y'
         if mark == 1
             plot(intervalTimesMatSingle*1000,(Perc_prop(:,sbjnum))*100,'color','r');            
@@ -164,18 +170,23 @@ end
 
 if Perc_prop_mark == 'n'
     if mark == 1
-        plot(intervalTimesMatSingle*1000,(Perc_prop_norm * 100),'color','r');
+        h1 = plot(intervalTimesMatSingle*1000,(Perc_prop_norm * 100),'color','r');
+        hold on;
         Perc_prop_ste = ste(Perc_prop*100,2);
-        errorbar(intervalTimesMatSingle*1000,mean(Perc_prop,2)*100,Perc_prop_ste,'r.','BarWidth',0.2);
+        errorbar(intervalTimesMatSingle*1000,(Perc_prop_norm * 100),Perc_prop_ste,'r.');
+        legend([h1],'AP');
     elseif mark == 2
-        plot(intervalTimesMatSingle*1000,(Perc_prop_norm * 100),'color','b');
+        h2 = plot(intervalTimesMatSingle*1000,(Perc_prop_norm * 100),'color','b');
+        Perc_prop_ste = ste(Perc_prop*100,2);
+        errorbar(intervalTimesMatSingle*1000,(Perc_prop_norm * 100),Perc_prop_ste,'b.');
+        legend([h2],'control');
     end
 end
-    title('perceived of apparent motion from the end of perceived path','FontSize',20);
+    title('proportion of apparent motion perceived from the end of perceived path','FontSize',20);
     axis([-10 400 -10 100]);
     xlabel('interval time between illusion and test gabor(ms)','fontSize',30);
     ylabel('proportion from perceived endpoint','FontSize',20);
-    legend('AP','control');
+
     % %     legend(sbjnames,'Location','northeast')
 ax = gca;
 ax.FontSize = 20;
