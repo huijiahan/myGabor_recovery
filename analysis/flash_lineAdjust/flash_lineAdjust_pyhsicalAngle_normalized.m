@@ -116,14 +116,14 @@ for sbjnum = 1:length(sbjnames)
     %%%--------------------------------------------------
     if Perc_loca_mark == 'y'
         [dotXpos_R_delay,dotYpos_R_end] = LineAngle2Posi(LineAngle_ave(:,1),dotXpos_R_st,dotYpos_R_end,lineLengthPixel);
-        graph_R = scatter(dotXpos_R_delay,dotYpos_R_end);
+        graph_R = scatter(dotXpos_R_delay,dotYpos_R_end,'bo');
         % make the control plot different color
         if mark == 2
             graph_R = scatter(dotXpos_R_delay,dotYpos_R_end,'marker','o','MarkerFaceColor','g');
         end
         hold on;
         [dotXpos_L_delay,dotYpos_L_end] = LineAngle2Posi(LineAngle_ave(:,2),dotXpos_L_st,dotYpos_L_end,lineLengthPixel);
-        graph_L = scatter(dotXpos_L_delay,dotYpos_L_end);%,'color',colorMap,'marker','o','MarkerFaceColor',colorMap);
+        graph_L = scatter(dotXpos_L_delay,dotYpos_L_end,'ro');%,'color',colorMap,'marker','o','MarkerFaceColor',colorMap);
         if mark == 2
             graph_L = scatter(dotXpos_L_delay,dotYpos_L_end,'marker','o','MarkerFaceColor','m');
         end
@@ -204,7 +204,6 @@ hold on;
 
 %     legend(sbjnames);
 %     title(sbjnames,'FontSize',40);
-
 cd '../../../../analysis/flash_lineAdjust'
 
 
