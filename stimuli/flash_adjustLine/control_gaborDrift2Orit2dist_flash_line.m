@@ -349,16 +349,7 @@ for block = 1:blockNumber
         Screen('Flip',window);
         WaitSecs(barDelayTime);
         
-        %----------------------------------------------------------------------
-        %%%                         stimulus Recording
-        %----------------------------------------------------------------------
-        
-        % Record the stimulus by frame
-        mov = recdisplay(rec,mov,'record',window,cueShowTime);
-        %         Screen('Flip',window);
-        % Draw fixation after stimuli in buffer
-        % Record the stimulus by frame
-        mov = recdisplay(rec,mov,'record',window,1);
+
         
         %----------------------------------------------------------------------
         %%%                         adjustable line setting
