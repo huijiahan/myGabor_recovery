@@ -214,8 +214,10 @@ for block = 1:blockNumber
              if frame == 1
                 if condition == 'upperRight_rightward'
                     gaborStartLocation_R = gaborLocation;
+                    gaborCueLoca_R = cueLocation;
                 elseif  condition == 'upperRight_leftward'
                     gaborStartLocation_L = gaborLocation;
+                    gaborCueLoca_L = cueLocation;
                 end
             end
             
