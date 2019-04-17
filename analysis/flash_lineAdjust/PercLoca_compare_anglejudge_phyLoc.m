@@ -4,21 +4,21 @@
 clear all;
 clear all;
 addpath '../../function';
-% decide analysis which distance
-mark = 1;
 
 % eachPercLoc = input('>>>> show each perceived location? (e.g.: n or y):  ','s');
 eachPercLoc = 'y';
-showwardmark = input('>>>> show rightward leftward or both? (e.g.: r or l or b):  ','s');
-
-
+% showwardmark = input('>>>> show rightward leftward or both? (e.g.: r or l or b):  ','s');
+showwardmark = 'l';
+% decide analysis which distance
+mark = 1;
+sbjnames = {'huijiahan'};  % 'huijiahan','lucy','hehuixia','guofanhua','linweiru'
 % for test flash apparent motion line adjust
 if mark == 1
     cd '../../data/GaborDrift/flash_lineAdjust/percLocaTest'
-    sbjnames = {'hehuixia'}; % 'huijiahan','lucy','xiahuan','gaoyige'   
 elseif mark == 2
     cd '../../data/GaborDrift/flash_lineAdjust/main_AP'
-    sbjnames = {'huijiahan'};    
+elseif mark == 3
+    cd '../../data/GaborDrift/flash_lineAdjust/circle_control'   
 end
 
 for sbjnum = 1:length(sbjnames)
@@ -30,7 +30,7 @@ for sbjnum = 1:length(sbjnames)
     gaborMatSingle = {'upperRight_rightward','upperRight_leftward'};
     %     intervalTimesMatSingle = [0 0.05 0.1 0.15 0.2 0.25 0.3 0.35];% [0 50 100 150 200 250 300 350]* 0.001;
     gaborDistanceFromFixationDegree = [10];
-    lineAngleColumn = 7;
+
     
     dotXpos_L_Mat = [];
     dotYpos_L_Mat = [];
@@ -55,7 +55,7 @@ for sbjnum = 1:length(sbjnames)
                 dotXpos_R_now =  str2double(RespMat(i,6));
                 dotYpos_R_now =  str2double(RespMat(i,7));
                 if eachPercLoc == 'y'
-                    plot(dotXpos_R_now,dotYpos_R_now,'bo');
+%                     plot(dotXpos_R_now,dotYpos_R_now,'bo');
                 end
                 dotXpos_R_Mat = [dotXpos_R_Mat;dotXpos_R_now];
                 dotYpos_R_Mat = [dotYpos_R_Mat;dotYpos_R_now];
@@ -99,41 +99,43 @@ elseif showwardmark == 'b'
     hold on;
     gaborTraj_R = plot(originX_R,originY_R,'-o','color','b');
 end
-% set the origin on the left top
-set(gca,'XAxisLocation','top','YAxisLocation','left','ydir','reverse');
-
-
 
 % rightward    leftward
-lineLengthDegree = 3.5;
-lineLengthPixel = deg2pix(lineLengthDegree,viewingDistance,screenXpixels,displaywidth);
-% [LineAngle_ave] = RespMat2LineAngle_ave(RespMat,intervalTimesMatSingle,gaborDistanceFromFixationDegree);
-[dotXpos_R_delay,dotYpos_R_end] = LineAngle2Posi(LineAngle_ave(:,1),dotXpos_R_st,dotYpos_R_end,lineLengthPixel);
-[dotXpos_L_delay,dotYpos_L_end] = LineAngle2Posi(LineAngle_ave(:,2),dotXpos_L_st,dotYpos_L_end,lineLengthPixel);
+if mark == 2  || mark == 3
+    lineLengthDegree = 3.5;
+    lineLengthPixel = deg2pix(lineLengthDegree,viewingDistance,screenXpixels,displaywidth);
+    [LineAngle_ave] = RespMat2LineAngle_ave_forDelay(RespMat,intervalTimesMatSingle,gaborDistanceFromFixationDegree);
+    [dotXpos_R_delay,dotYpos_R_end] = LineAngle2Posi(LineAngle_ave(:,1),dotXpos_R_st,dotYpos_R_end,lineLengthPixel);
+    [dotXpos_L_delay,dotYpos_L_end] = LineAngle2Posi(LineAngle_ave(:,2),dotXpos_L_st,dotYpos_L_end,lineLengthPixel);
+    
+    
+    % change line angle to position location x,y
+    % from darker to lighter = delay 0 to 350
+    if showwardmark == 'r'
+        colorMap = mycolorMap(size(LineAngle_ave,1),5);
+        graph(1) = scatter(dotXpos_R_delay,dotYpos_R_end,60,colorMap,'filled');
+    elseif showwardmark =='l'
+        colorMap = mycolorMap(size(LineAngle_ave,1),1);
+        graph(2) = scatter(dotXpos_L_delay,dotYpos_L_end,60,colorMap,'filled');
+    elseif showwardmark == 'b'
+        colorMap = mycolorMap(size(LineAngle_ave,1),5);
+        graph(1) = scatter(dotXpos_R_delay,dotYpos_R_end,60,colorMap,'filled');
+        colorMap = mycolorMap(size(LineAngle_ave,1),1);
+        graph(2) = scatter(dotXpos_L_delay,dotYpos_L_end,60,colorMap,'filled');
+    end
 
-% change line angle to position location x,y
-% from darker to lighter = delay 0 to 350 
-if showwardmark == 'r'    
-    colorMap = mycolorMap(size(LineAngle_ave,1),5);
-    graph(1) = scatter(dotXpos_R_delay,dotYpos_R_end,60,colorMap,'filled');
-elseif showwardmark =='l'
-    colorMap = mycolorMap(size(LineAngle_ave,1),1);
-    graph(2) = scatter(dotXpos_L_delay,dotYpos_L_end,60,colorMap,'filled');
-elseif showwardmark == 'b'
-    colorMap = mycolorMap(size(LineAngle_ave,1),5);
-    graph(1) = scatter(dotXpos_R_delay,dotYpos_R_end,60,colorMap,'filled');
-    colorMap = mycolorMap(size(LineAngle_ave,1),1);
-    graph(2) = scatter(dotXpos_L_delay,dotYpos_L_end,60,colorMap,'filled');
-end
 % set(gca,'box','off')
 % xlabel('location of x axis on the screen','fontSize',30);
 % ylabel('location of y axis on the screen','fontSize',30);
-set(gca,'XColor','none','YColor','none')
-
-
-h = [percLoca_L;percLoca_R;gaborTraj_L;gaborTraj_R;graph(1);graph(2)];
-legend(h,'perceived location(motion leftward)','perceived location(motion rightward)','gabor trajactory(motion leftward)','gabor trajactory(motion rightward)','Location','northeast');
+% axis([0 600 0 400]);
+% h = [percLoca_L;percLoca_R;gaborTraj_L;gaborTraj_R;graph(1);graph(2)];
+% legend(h,'perceived location(motion leftward)','perceived location(motion rightward)','gabor trajactory(motion leftward)','gabor trajactory(motion rightward)','Location','northeast');
 % [lgd, icons, plots, txt] = legend('show');
 %
 % ax = gca;
 % ax.FontSize = 20;
+end
+set(gca,'XColor','none','YColor','none')
+set(gcf,'color','w');
+% set the origin on the left top
+set(gca,'XAxisLocation','top','YAxisLocation','left','ydir','reverse');
