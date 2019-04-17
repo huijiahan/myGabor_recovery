@@ -94,7 +94,7 @@ all = RespStartMatrix();
 gaborMatSingle = {'upperRight_rightward','upperRight_leftward'};
 % gaborMatSingle = {'upperLeft_rightward','lowerLeft_rightward'};
 % interval time between cue and gabor
-intervalTimesMatSingle = [0 0.05 0.1 0.15 0.2 0.25 0.3 0.35];   % intervalTime second 
+intervalTimesMatSingle = [0 0.05 0.1 0.15 0.2 0.25 0.3 0.35];   % intervalTime second
 
 
 % gabor location from center in angle  but fixation move left 3 degree [4 5
@@ -230,11 +230,11 @@ for block = 1:blockNumber
             cueLocation = CenterRectOnPointd(gabor.rect, xCenter  + gaborfixationFactor * gaborDistanceFromFixationPixel + gaborStartLocMoveXFactor * gaborStartLocMoveXPixel,  ...
                 yCenter +  gaborStartLocMoveYFactor * gaborStartLocMoveYPixel + yframeFactor * yframe(frame) + cueVerDisPixFactor * cueVerDisPix);
             
-         %----------------------------------------------------------------------
-        %                       save the gabor start location
-        %----------------------------------------------------------------------           
+            %----------------------------------------------------------------------
+            %                       save the gabor start location
+            %----------------------------------------------------------------------
             
-             if frame == 1
+            if frame == 1
                 if condition == 'upperRight_rightward'
                     gaborStartLocation_R = gaborLocation;
                 elseif  condition == 'upperRight_leftward'
@@ -273,11 +273,11 @@ for block = 1:blockNumber
                 masktex_out = Screen('MakeTexture', window, flash_out);
                 masktex_in = Screen('MakeTexture', window, flash_in);
                 Screen('DrawTextures', window, masktex_out, [],dstRects);% gaborLocation);%, orientation, [], [], [], [],...
-%                     kPsychDontDoRotation, gabor.propertiesMatFirst');
-
+                %                     kPsychDontDoRotation, gabor.propertiesMatFirst');
+                
                 Screen('DrawTextures', window, masktex_in, [],dstRects);
                 % Randomise the phase of the Gabors and make a properties matrix
-%                 gabor.propertiesMatFirst(1) = gabor.propertiesMatFirst(1) + InternalDriftPhaseIncrFactor * gabor.InternalDriftPhaseIncrPerFrame;
+                %                 gabor.propertiesMatFirst(1) = gabor.propertiesMatFirst(1) + InternalDriftPhaseIncrFactor * gabor.InternalDriftPhaseIncrPerFrame;
             end
             
             Screen('BlendFunction', window, GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA);
@@ -313,18 +313,23 @@ for block = 1:blockNumber
         %----------------------------------------------------------------------
         %                       save the gabor end location
         %----------------------------------------------------------------------
-
-        if condition == 'upperRight_rightward' 
-           gaborEndLocation_R = gaborLocation;
+        
+        if condition == 'upperRight_rightward'
+            gaborEndLocation_R = gaborLocation;
         elseif  condition == 'upperRight_leftward'
-            gaborEndLocation_L = gaborLocation;       
+            gaborEndLocation_L = gaborLocation;
         end
-
+        
         
         %----------------------------------------------------------------------
         %                       draw test gabor(green flash)
         %----------------------------------------------------------------------
         
+        if condition == 'upperRight_rightward'
+            gaborCueLoca_R = cueLocation;
+        elseif  condition == 'upperRight_leftward'
+            gaborCueLoca_L = cueLocation;
+        end
         
         
         % draw the green gaussian flash at the cue location
@@ -349,7 +354,7 @@ for block = 1:blockNumber
         Screen('Flip',window);
         WaitSecs(barDelayTime);
         
-
+        
         
         %----------------------------------------------------------------------
         %%%                         adjustable line setting
@@ -420,7 +425,7 @@ for block = 1:blockNumber
         
         RespMat = [all.Block all.Trial  all.condition all.intervalTimesVector all.gaborDistanceFromFixationDegree all.responseVector all.lineAngle all.responseTimeVector];  %
     end
-
+    
 end
 
 toc;

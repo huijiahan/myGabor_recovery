@@ -7,28 +7,26 @@ addpath '../../function';
 % decide analysis which distance
 
 
-Perc_prop_mark = input('>>>> plot each perceived proportion? (e.g.: n or y):  ','s');
-Perc_loca_mark = input('>>>> scatter perceived location? (e.g.: n or y):  ','s');
+% Perc_prop_mark = input('>>>> plot each perceived proportion? (e.g.: n or y):  ','s');
+Perc_prop_mark = 'n';
+% Perc_loca_mark = input('>>>> scatter perceived location? (e.g.: n or y):  ','s');
+Perc_loca_mark = 'n';
 
-mark = 2;
+mark = 1;
+sbjnames = {'guofanhua'}; % 'linweiru','guofanhua','wangzetong','huijiahan664'，'sunliwei'
 % for test flash apparent motion line adjust
 if mark == 1
-    cd '../../data/GaborDrift/flash_lineAdjust/main_AP'
-    % 0.5 dva
-    sbjnames = {'guofanhua'}; % 'linweiru','guofanhua','wangzetong','huijiahan664'，'sunliwei'
+    cd '../../data/GaborDrift/flash_lineAdjust/main_AP'     
     lineAngleColumn = 7;
 elseif mark == 2
     % 1.5 dva
     cd '../../data/GaborDrift/flash_lineAdjust/circle_control'
-    sbjnames = {'guofanhua'};
     lineAngleColumn = 7;
     
     % for test gabor line adjust
 elseif mark == 3
-    cd '../../data/GaborDrift/gabor_lineAdjust/1Ori1Dis'
-    % 0.5 dva
-    sbjnames = {'k2Ori'}; % 'linweiru','guofanhua','wangzetong','huijiahan664'，'sunliwei'
-    lineAngleColumn = 7;
+    cd '../../data/GaborDrift/flash_lineAdjust/percLocaTest'
+
     
 end
 
@@ -134,7 +132,7 @@ for sbjnum = 1:length(sbjnames)
         end
     end
 %     legend(['S' num2str(sbjnum)]);
-    legend('S2');
+%     legend('S2');
     %%%--------------------------------------------------
     %     plot the perceived proportion
     %%%--------------------------------------------------

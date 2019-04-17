@@ -1,7 +1,8 @@
 % RespMat to Line angle ave have to be the data from which response is
 % adjustable line
 
-function  [LineAngle_ave] = RespMat2LineAngle_ave(RespMat,intervalTimesMatSingle,gaborDistanceFromFixationDegree)
+function  [LineAngle_ave,LineDegree10dva_right_ave,LineDegree10dva_left_ave] = RespMat2LineAngle_ave(RespMat,intervalTimesMatSingle,...
+    gaborDistanceFromFixationDegree)
 
 
 
@@ -52,4 +53,7 @@ end
 
 trialNumPerCondition = length(RespMat)/(length(intervalTimesMatSingle)*length(gaborDistanceFromFixationDegree));
 LineAngle_ave = [LineDegree10dva_right LineDegree10dva_left]/(trialNumPerCondition/2);
+LineDegree10dva_right_ave = LineDegree10dva_right/(trialNumPerCondition/2);
+LineDegree10dva_left_ave = LineDegree10dva_left/(trialNumPerCondition/2);
+
 end
