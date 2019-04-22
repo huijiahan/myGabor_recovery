@@ -7,9 +7,9 @@ addpath '../../function';
 % decide analysis which distance
 
 
-mark = 1;
+mark = 3;
 
-sbjnames = {'guofanhua','huijiahan','linweiru','hehuixia','lucy'}; % 'guofanhua','huijiahan','linweiru','hehuixia','lucy'
+sbjnames = {'huijiahan'}; % 'guofanhua','huijiahan','linweiru','hehuixia','lucy'
 
 % for test flash apparent motion line adjust
 if mark == 1
@@ -21,8 +21,9 @@ elseif mark == 2
     %     sbjnames = {'guofanhua','huijiahan','lucy','hehuixia','linweiru'};
     % for test gabor line adjust
 elseif mark == 3
-    cd '../../data/GaborDrift/flash_lineAdjust/AP_0.5dva'
-    sbjnames = {'huijiahan'}; % 'linweiru','guofanhua','wangzetong','huijiahan664'，'sunliwei'
+    cd '../../data/GaborDrift/flash_lineAdjust/onewhiteflash_lineAdjust'
+    sbjnames = {'lucy'}; % 'linweiru','guofanhua','wangzetong','huijiahan664'，'sunliwei'
+    
 end
 
 
@@ -34,7 +35,11 @@ for sbjnum = 1:length(sbjnames)
     Files = dir([s3]);
     load (Files.name);
     gaborMatSingle = {'upperRight_rightward','upperRight_leftward'};
+    if mark == 3
+    intervalTimesMatSingle = [0 0.25 0.5 0.75 1];
+    else
     intervalTimesMatSingle = [0 0.05 0.1 0.15 0.2 0.25 0.3 0.35];% [0 50 100 150 200 250 300 350]* 0.001;
+    end
     gaborDistanceFromFixationDegree = [10];
     [LineAngle_ave,LineDegree10dva_right_ave,LineDegree10dva_left_ave] = ...
         RespMat2LineAngle_ave_forDelay(RespMat,intervalTimesMatSingle,gaborDistanceFromFixationDegree);
@@ -77,7 +82,7 @@ if mark == 1  % main
     
     color = 'r';
     color_error = 'r.';
-elseif mark == 2
+elseif mark ~= 1
     color = 'b';
     color_error = 'b.';
 end
@@ -98,14 +103,13 @@ errorbar(intervalTimesMatSingle*1000,(Perc_prop_norm_L * 100),Perc_prop_ste_L,co
 %         hold on;
 %         errorbar(intervalTimesMatSingle*1000,(Perc_prop_norm * 100),Perc_prop_ste,'g.');
 
-[p,tbl,stats] = anova1(Perc_prop_L);
-
+% [p,tbl,stats] = anova1(Perc_prop_L);
 
 
 
 
 title('proportion of apparent motion perceived from the end of perceived path','FontSize',20);
-axis([-10 360 0 100]);
+axis([-10 1000 0 120]);
 xlabel('interval time between illusion and test gabor(ms)','fontSize',30);
 ylabel('proportion from perceived endpoint','FontSize',20);
 % legend('AP','control')

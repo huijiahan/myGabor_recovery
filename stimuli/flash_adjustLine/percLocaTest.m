@@ -10,8 +10,10 @@ sca;
 tic;
 
 subject_name = input('>>>> Participant name (e.g.: AB):  ','s');
+% subject_name = 'k'
 %  debug 1  no    debug  2  yes
 debug = input('>>>> debug? (e.g.: no debug press n; yes debug press y):  ','s');
+% debug = 'n'
 % moveMark = input('>>>> test dot strict to move horizontal or freely? (e.g.: h or f):  ','s');
 moveMark = 'f';
 %----------------------------------------------------------------------
@@ -37,7 +39,7 @@ blackcolor = BlackIndex(screenNumber);
 whitecolor = WhiteIndex(screenNumber);
 grey = whitecolor / 2;
 % set the window size
-winSize = [];   %[0 0 1024 768];
+winSize = [0 0 1024 768];   %[0 0 1024 768];
 
 
 %----------------------------------------------------------------------
@@ -82,7 +84,7 @@ spaceKey = KbName('space');
 % Experiment setup
 % fprintf('subject_name is',);
 
-trialNumber = 48; % have to triple times of 8 which is the number of the interval time and 9 conditions
+trialNumber = 24; % have to triple times of 8 which is the number of the interval time and 9 conditions
 blockNumber = 6;
 % Response start matrix setting
 all = RespStartMatrix();
@@ -91,7 +93,7 @@ if debug == 'n'
     gaborMatSingle = {'upperRight_rightward','upperRight_leftward'};
     % gaborMatSingle = {'upperLeft_rightward','lowerLeft_rightward'};
     % interval time between cue and gabor
-    intervalTimesMatSingle = [0 0.05 0.1 0.15 0.2 0.25 0.3 0.35];   % intervalTime second
+    intervalTimesMatSingle = [0];   % intervalTime second
     gaborDistanceFromFixationDegree = [10];   % visual angle degree
 elseif debug == 'y'
     gaborMatSingle = {'upperRight_leftward'};
@@ -158,7 +160,7 @@ gauss.dotSizePix = 200;
 % gauss.DimVisualAngle = 4;  % gabor visual angle
 gauss.Dim = round(deg2pix(gabor.VisualAngle,viewingDistance,screenXpixels,displaywidth));
 
-gauss.testDotDelay = 0.8;
+gauss.testDotDelay = 0.9;
 gauss.standDevia = 7 ;% small 7    big 4
 gauss.dotFlag = 2;   %  grey flash
 % gauss.dotAppeartime = 0.5;
@@ -234,9 +236,11 @@ for block = 1:blockNumber
             
             if frame == 1
                 if condition == 'upperRight_rightward'
-                    gaborStartLocation_R = gaborLocation;
+                    gaborLoc.Start_R = gaborLocation;
+                    
                 elseif  condition == 'upperRight_leftward'
-                    gaborStartLocation_L = gaborLocation;
+                    gaborLoc.Start_L = gaborLocation;
+                    
                 end
             end
                     
@@ -269,21 +273,31 @@ for block = 1:blockNumber
         Screen('Flip',window);
         % wait 0.3 to present adjustable dot
         WaitSecs(gauss.testDotDelay);
-        
+
         %----------------------------------------------------------------------
-        %%%                         adjustable dot setting
+        %                       save the gabor end location
+        %----------------------------------------------------------------------
+        
+        if condition == 'upperRight_rightward'
+            gaborLoc.End_R = gaborLocation;
+        elseif  condition == 'upperRight_leftward'
+            gaborLoc.End_L = gaborLocation;
+        end
+        
+%         if condition == 'upperRight_rightward'
+%             gaborLoc.Cue_R = cueLocation;
+%         elseif  condition == 'upperRight_leftward'
+%             gaborLoc.Cue_L = cueLocation;
+%         end
+                
+        %----------------------------------------------------------------------
+        %%%                         adjustable flash setting
         %----------------------------------------------------------------------
         
         % Now we wait for a keyboard button signaling the observers response.
         % The left arrow key signals a "left" response and the right arrow key
         % a "right" response. You can also press escape if you want to exit the
         % program
-        if condition == 'upperRight_rightward' 
-           gaborEndLocation_R = gaborLocation;
-        elseif  condition == 'upperRight_leftward'
-            gaborEndLocation_L = gaborLocation;       
-        end
-        
         t1 = GetSecs;
         respToBeMade = true;
         
@@ -293,7 +307,24 @@ for block = 1:blockNumber
                 - xframeFactor * xframe(frame), yCenter +  gaborStartLocMoveYFactor * gaborStartLocMoveYPixel + yframeFactor * yframe(frame));        
         gaborEndLocaMid = CenterRectOnPointd(gabor.rect, xCenter  + gaborfixationFactor * gaborDistanceFromFixationPixel + gaborStartLocMoveXFactor * gaborStartLocMoveXPixel  ...
            , yCenter +  gaborStartLocMoveYFactor * gaborStartLocMoveYPixel + yframeFactor * yframe(frame));
-
+        
+        %----------------------------------------------------------------------
+        %                       save the adjustable flash location
+        %----------------------------------------------------------------------
+        
+        if condition == 'upperRight_rightward'
+            gaborLoc.End_R = gaborLocation;
+            gaborLoc.Phy_R = gaborLocation;
+            gaborLoc.Perc_R = gaborLocationPerc;
+            gaborLoc.Mid_R = gaborEndLocaMid;
+        elseif  condition == 'upperRight_leftward'
+            gaborLoc.End_L = gaborLocation;
+            gaborLoc.Phy_L = gaborLocation;
+            gaborLoc.Perc_L = gaborLocationPerc;
+            gaborLoc.Mid_L = gaborEndLocaMid;                   
+        end
+       
+       
         dotLoca = [gaborLocationPhy; gaborEndLocaMid; gaborLocationPerc];
         
 
@@ -390,7 +421,7 @@ for block = 1:blockNumber
         all.gaborDistanceFromFixationDegree = [all.gaborDistanceFromFixationDegree; gaborDistanceFromFixationDegreeNow];
         %         all.intervalTimesVector = [all.intervalTimesVector;intervalTimes];
         all.orientation = [all.orientation;orientation];
-        WaitSecs(1);
+        WaitSecs(0.8);
         
         %----------------------------------------------------------------------
         %%%                         stimulus Recording

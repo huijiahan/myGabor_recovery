@@ -1,4 +1,4 @@
-% show perceived location test , gabor trajactory and line adjustable
+% show perceived location, gabor trajactory and line adjustable
 % experiment result in the same figure
 
 clear all;
@@ -8,10 +8,10 @@ addpath '../../function';
 % eachPercLoc = input('>>>> show each perceived location? (e.g.: n or y):  ','s');
 eachPercLoc = 'y';
 % showwardmark = input('>>>> show rightward leftward or both? (e.g.: r or l or b):  ','s');
-showwardmark = 'l';
+showwardmark = 'b';
 % decide analysis which distance
 mark = 1;
-sbjnames = {'huijiahan'};  % 'huijiahan','lucy','hehuixia','guofanhua','linweiru'
+sbjnames = {'guofanhua'};  % 'huijiahan','lucy','hehuixia','guofanhua','linweiru' huijiahan-2019-4-22-9-59
 % for test flash apparent motion line adjust
 if mark == 1
     cd '../../data/GaborDrift/flash_lineAdjust/percLocaTest'
@@ -37,7 +37,9 @@ for sbjnum = 1:length(sbjnames)
     dotXpos_R_Mat = [];
     dotYpos_R_Mat = [];
     
-    
+    %----------------------------------------------------------------------
+    %             plot perceived location for each trial 
+    %----------------------------------------------------------------------
     for i = 1 : length(RespMat)
         switch RespMat(i,3)
             % left 1   right 0
@@ -55,7 +57,7 @@ for sbjnum = 1:length(sbjnames)
                 dotXpos_R_now =  str2double(RespMat(i,6));
                 dotYpos_R_now =  str2double(RespMat(i,7));
                 if eachPercLoc == 'y'
-%                     plot(dotXpos_R_now,dotYpos_R_now,'bo');
+                    plot(dotXpos_R_now,dotYpos_R_now,'bo');
                 end
                 dotXpos_R_Mat = [dotXpos_R_Mat;dotXpos_R_now];
                 dotYpos_R_Mat = [dotYpos_R_Mat;dotYpos_R_now];
@@ -64,6 +66,9 @@ for sbjnum = 1:length(sbjnames)
         
     end
 end
+%----------------------------------------------------------------------
+%             plot centred  perceived location 
+%----------------------------------------------------------------------
 
 % plot centroid of each perceived location
 if showwardmark == 'l'
@@ -76,6 +81,14 @@ elseif showwardmark == 'b'
     percLoca_R = plot(mean(dotXpos_R_Mat),mean(dotYpos_R_Mat),'bo', 'MarkerFaceColor','b','MarkerSize', 10);
 end
 
+%----------------------------------------------------------------------
+%             plot gabor trajactory  
+%----------------------------------------------------------------------
+
+% gaborStartLocation_L = gaborLoc.Start_L;
+% gaborEndLocation_L = gaborLoc.End_L;
+% gaborStartLocation_R = gaborLoc.Start_R;
+% gaborEndLocation_R = gaborLoc.End_R;
 
 [dotXpos_L_st,dotYpos_L_st] = findcenter(gaborStartLocation_L);
 [dotXpos_L_end,dotYpos_L_end] = findcenter(gaborEndLocation_L);
@@ -99,6 +112,11 @@ elseif showwardmark == 'b'
     hold on;
     gaborTraj_R = plot(originX_R,originY_R,'-o','color','b');
 end
+
+
+%----------------------------------------------------------------------
+%         turn line angle to position and plot mean result  
+%----------------------------------------------------------------------
 
 % rightward    leftward
 if mark == 2  || mark == 3

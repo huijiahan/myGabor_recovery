@@ -42,13 +42,13 @@ gabor.InternalDriftCyclesPerFrame = gabor.InternalDriftCyclesPerSecond * 360;
 
 % set texture parameters   Obvious parameters
 
-gabor.contrast = 0.8;
-gabor.aspectRatio = 1.0;
+gabor.contrast = 0.8;  % 0.8
+gabor.aspectRatio = 1.0;  % 1.0 
 gabor.phase = 0;
 
 % Spatial Frequency(Cycles Per Pixel)  gabor internal motion
 % One Cycle = Grey-black-Grey-White-Grey i.e. One Black and One White Lobe
-gabor.numCycles = 2;  % cycles of present gabor
+gabor.numCycles = 2;  % cycles of present gabor   2
 gabor.freq = gabor.numCycles/gabor.DimPix; % per pixel how many cycles
 
 % Sigma of Gussian
@@ -57,9 +57,9 @@ gabor.sigma = gabor.DimPix/7;
 gabor.propertiesMatFirst = [gabor.phase, gabor.freq, gabor.sigma, gabor.contrast, gabor.aspectRatio, 0, 0, 0];
 
 % Build a procedural gabor texture
-gabor.backgroundOffset = [0.5 0.5 0.5 0.0];
-gabor.disableNorm = 1;
-gabor.preContrastMultiplier = 0.5;
+gabor.backgroundOffset = [0.5 0.5 0.5 0.0];  % [0.5 0.5 0.5 0]
+gabor.disableNorm = 1;  % 1
+gabor.preContrastMultiplier = 0.5; % 0.5
 
 [gabor.tex, gabor.rect] = CreateProceduralGabor(window, gabor.DimPix, gabor.DimPix, [],...
     gabor.backgroundOffset, gabor.disableNorm, gabor.preContrastMultiplier);

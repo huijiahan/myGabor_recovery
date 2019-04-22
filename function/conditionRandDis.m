@@ -18,7 +18,7 @@ function [InternalDriftPhaseIncrFactor,xframeFactor,yframeFactor,cueVerDisPixFac
         
         % delete 7 dva rightward  7dva    leftward 7 dva  
 %         rightward 10dva  leftward 10dva
- meanSubIlluDegree =  [59.4000   51.8000];
+ meanSubIlluDegree =  [45 45];
  
 % rightward 7dva   blockData(trial,1)   fixation distance
 % if  (strcmp(condition,'upperRight_rightward')  &&  blockData(trial,1) == 1)
