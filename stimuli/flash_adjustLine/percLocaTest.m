@@ -324,7 +324,7 @@ for block = 1:blockNumber
             gaborLoc.Mid_L = gaborEndLocaMid;                   
         end
        
-       
+       % RespMat column 8    1 2 3
         dotLoca = [gaborLocationPhy; gaborEndLocaMid; gaborLocationPerc];
         
 

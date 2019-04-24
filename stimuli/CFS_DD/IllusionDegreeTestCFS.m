@@ -123,19 +123,12 @@ gaborDistanceFromFixationPixel = deg2pix(gaborDistanceFromFixationDegree,viewing
 %%%                     generate  CFS
 %----------------------------------------------------------------------
 load /Users/jia/Documents/matlab/DD_illusion/myGabor/function/CFS/CFSMatMovie.mat
-CFSFrequency= 8;
+% CFSFrequency= 8;
 CFSMatMovie=Shuffle(CFSMatMovie);
 CFSFrames = 100;
 CFScont = 1;
-% frameRate = 60;
 
 
-
-% r2 = disk_radius;
-% pict = 256*rand(disk_radius,disk_radius,3);
-% mask2 = r2<disk_radius;
-% pict(:,:,4) = mask2;
-% pict(:,:,4) = uint8(pict(:,:,4)*255);
 % load CFS images and Make Textures
 CFSsize_scale = 0.25;
 xsize = 256;
@@ -155,10 +148,6 @@ for i=1:CFSFrames
     CFSImage = CFSImage((256/2-128*CFSsize_scale):(256/2+128*CFSsize_scale),(256/2-128*CFSsize_scale):(256/2+128*CFSsize_scale),:);
     CFSTex(i)=Screen('MakeTexture',window,CFSImage);
 end
-
-
-
-
 
 %----------------------------------------------------------------------
 %                       Experimental loop

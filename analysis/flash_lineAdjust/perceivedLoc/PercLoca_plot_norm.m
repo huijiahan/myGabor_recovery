@@ -3,7 +3,7 @@
 
 clear all;
 clear all;
-addpath '../../function';
+addpath '../../../function';
 
 % eachPercLoc = input('>>>> show each perceived location? (e.g.: n or y):  ','s');
 eachPercLoc = 'y';
@@ -11,16 +11,14 @@ eachPercLoc = 'y';
 showwardmark = 'b';
 % decide analysis which distance
 mark = 1;
-sbjnames = {'lucy'};  % 'huijiahan','lucy','hehuixia','guofanhua','linweiru' huijiahan-2019-4-22-9-59
+sbjnames = {'qinxiwen'};  % 'huijiahan','lucy','hehuixia','guofanhua','linweiru' huijiahan-2019-4-22-9-59
 % for test flash apparent motion line adjust
 if mark == 1
-    cd '../../data/GaborDrift/flash_lineAdjust/percLocaTest/'
+    cd '../../../data/GaborDrift/flash_lineAdjust/percLocaTest'
 elseif mark == 2
     cd '../../data/GaborDrift/flash_lineAdjust/main_AP'
 elseif mark == 3
     cd '../../data/GaborDrift/flash_lineAdjust/circle_control'
-elseif mark == 4
-    cd '../../data/GaborDrift/flash_lineAdjust/onewhiteflash_lineAdjust'
 end
 
 for sbjnum = 1:length(sbjnames)
@@ -56,20 +54,20 @@ for sbjnum = 1:length(sbjnames)
                 if eachPercLoc == 'y'
                     % seprate result with different flash location
                     % 1 physical  2 mid  3 perceived location
-%                     if str2double(RespMat(i,9)) == 1
-%                         plot(dotXpos_L_now,dotYpos_L_now,'ro');
-%                         dotXpos_L_Mat_Phy = [dotXpos_L_Mat_Phy;dotXpos_L_now];
-%                         dotYpos_L_Mat_Phy = [dotYpos_L_Mat_Phy;dotYpos_L_now];
-%                     elseif str2double(RespMat(i,9)) == 2
-%                         plot(dotXpos_L_now,dotYpos_L_now,'go');
-%                         dotXpos_L_Mat_Mid = [dotXpos_L_Mat_Mid;dotXpos_L_now];
-%                         dotYpos_L_Mat_Mid = [dotYpos_L_Mat_Mid;dotYpos_L_now];
-%                     elseif str2double(RespMat(i,9)) == 3
-%                         plot(dotXpos_L_now,dotYpos_L_now,'bo');
-%                         dotXpos_L_Mat_Perc = [dotXpos_L_Mat_Perc;dotXpos_L_now];
-%                         dotYpos_L_Mat_Perc = [dotYpos_L_Mat_Perc;dotYpos_L_now];
-%                     end
-%                     plot(dotXpos_L_now,dotYpos_L_now,'ro');
+                    %                     if str2double(RespMat(i,9)) == 1
+                    %                         plot(dotXpos_L_now,dotYpos_L_now,'ro');
+                    %                         dotXpos_L_Mat_Phy = [dotXpos_L_Mat_Phy;dotXpos_L_now];
+                    %                         dotYpos_L_Mat_Phy = [dotYpos_L_Mat_Phy;dotYpos_L_now];
+                    %                     elseif str2double(RespMat(i,9)) == 2
+                    %                         plot(dotXpos_L_now,dotYpos_L_now,'go');
+                    %                         dotXpos_L_Mat_Mid = [dotXpos_L_Mat_Mid;dotXpos_L_now];
+                    %                         dotYpos_L_Mat_Mid = [dotYpos_L_Mat_Mid;dotYpos_L_now];
+                    %                     elseif str2double(RespMat(i,9)) == 3
+                    %                         plot(dotXpos_L_now,dotYpos_L_now,'bo');
+                    %                         dotXpos_L_Mat_Perc = [dotXpos_L_Mat_Perc;dotXpos_L_now];
+                    %                         dotYpos_L_Mat_Perc = [dotYpos_L_Mat_Perc;dotYpos_L_now];
+                    %                     end
+                    %                     plot(dotXpos_L_now,dotYpos_L_now,'ro');
                 end
                 hold on;
                 dotXpos_L_Mat = [dotXpos_L_Mat;dotXpos_L_now];
@@ -93,7 +91,7 @@ for sbjnum = 1:length(sbjnames)
                     %                         dotXpos_R_Mat_Perc = [dotXpos_R_Mat_Perc;dotXpos_R_now];
                     %                         dotYpos_R_Mat_Perc = [dotYpos_R_Mat_Perc;dotYpos_R_now];
                     %                     end
-%                 plot(dotXpos_R_now,dotYpos_R_now,'bo');
+                    %                 plot(dotXpos_R_now,dotYpos_R_now,'bo');
                 end
                 
                 dotXpos_R_Mat = [dotXpos_R_Mat;dotXpos_R_now];
@@ -102,34 +100,34 @@ for sbjnum = 1:length(sbjnames)
         end
         
     end
-% end
-%----------------------------------------------------------------------
-%             plot centred  perceived location
-%----------------------------------------------------------------------
-
-% plot centroid of each perceived location
-% if showwardmark == 'l'
-%     percLoca = percLoca_L;
-%     dotXpos_Mat = dotXpos_L_Mat;
-%     dotYpos_Mat = dotYpos_L_Mat;
-%     dotcolor = 'ro';
-%     facecolor =  'r';
-% elseif showwardmark == 'r'
-%     percLoca = percLoca_R;
-%     dotXpos_Mat = dotXpos_R_Mat;
-%     dotYpos_Mat = dotYpos_R_Mat;
-%     dotcolor = 'bo';
-%     facecolor =  'b';
-% end
-% hold on;
-
-percLoca = plot(mean(dotXpos_L_Mat),mean(dotYpos_L_Mat),'ro', 'MarkerFaceColor','r','MarkerSize', 10);
-
-percLoca_R = plot(mean(dotXpos_R_Mat),mean(dotYpos_R_Mat),'bo', 'MarkerFaceColor','b','MarkerSize', 10);
-% percLoca_R_Phy = plot(mean(dotXpos_R_Mat_Phy),mean(dotYpos_R_Mat_Phy),'ro', 'MarkerFaceColor','r','MarkerSize', 10);
-% percLoca_R_Mid = plot(mean(dotXpos_R_Mat_Mid),mean(dotYpos_R_Mat_Mid),'go', 'MarkerFaceColor','g','MarkerSize', 10);
-% percLoca_R_Perc = plot(mean(dotXpos_R_Mat_Perc),mean(dotYpos_R_Mat_Perc),'mo', 'MarkerFaceColor','m','MarkerSize', 10);
-
+    % end
+    %----------------------------------------------------------------------
+    %             plot centred  perceived location
+    %----------------------------------------------------------------------
+    
+    % plot centroid of each perceived location
+    % if showwardmark == 'l'
+    %     percLoca = percLoca_L;
+    %     dotXpos_Mat = dotXpos_L_Mat;
+    %     dotYpos_Mat = dotYpos_L_Mat;
+    %     dotcolor = 'ro';
+    %     facecolor =  'r';
+    % elseif showwardmark == 'r'
+    %     percLoca = percLoca_R;
+    %     dotXpos_Mat = dotXpos_R_Mat;
+    %     dotYpos_Mat = dotYpos_R_Mat;
+    %     dotcolor = 'bo';
+    %     facecolor =  'b';
+    % end
+    % hold on;
+    
+    percLoca_L = plot(mean(dotXpos_L_Mat),mean(dotYpos_L_Mat),'ro', 'MarkerFaceColor','r','MarkerSize', 10);
+    
+    percLoca_R = plot(mean(dotXpos_R_Mat),mean(dotYpos_R_Mat),'bo', 'MarkerFaceColor','b','MarkerSize', 10);
+    % percLoca_R_Phy = plot(mean(dotXpos_R_Mat_Phy),mean(dotYpos_R_Mat_Phy),'ro', 'MarkerFaceColor','r','MarkerSize', 10);
+    % percLoca_R_Mid = plot(mean(dotXpos_R_Mat_Mid),mean(dotYpos_R_Mat_Mid),'go', 'MarkerFaceColor','g','MarkerSize', 10);
+    % percLoca_R_Perc = plot(mean(dotXpos_R_Mat_Perc),mean(dotYpos_R_Mat_Perc),'mo', 'MarkerFaceColor','m','MarkerSize', 10);
+    
 end
 
 %----------------------------------------------------------------------
@@ -148,6 +146,7 @@ gaborEndLocation_R = gaborLoc.End_R;
 
 
 
+
 originX_L = [dotXpos_L_st,dotXpos_L_end];
 originY_L = [dotYpos_L_st,dotYpos_L_end];
 originX_R = [dotXpos_R_st,dotXpos_R_end];
@@ -159,18 +158,39 @@ if showwardmark == 'l'
 elseif showwardmark == 'r'
     gaborTraj_R = plot(originX_R,originY_R,'-o','color','b');
 elseif showwardmark == 'b'
-        gaborTraj_L = plot(originX_L,originY_L,'-o','color','r');
+    gaborTraj_L = plot(originX_L,originY_L,'-o','color','r');
     hold on;
     gaborTraj_R = plot(originX_R,originY_R,'-o','color','b');
+    
 end
 
+%----------------------------------------------------------------------
+%         rotate leftward trajactory to rightward trajactory
+%----------------------------------------------------------------------
+% create a matrix of these points, which will be useful in future calculations
+origin = [originX_L; originY_L];
+% choose a point which will be the center of rotation
+x_rotaCenter = (dotXpos_L_st + dotXpos_L_end)/2;
+y_rotaCenter = (dotYpos_L_st + dotYpos_L_end)/2;
+% meanSubIlluDegree(1)  rightward    2 leftward
+theta = -(meanSubIlluDegree(1) + meanSubIlluDegree(2))/2*pi/180;
+% rotate leftward trajactory to rightward trajactory
+[x_rotated,y_rotated] = rotate_line_about_fix_center(originX_L,originY_L,theta,x_rotaCenter,y_rotaCenter);
 
+% gaborTraj_L = plot(neworiginX_L,newooriginY_L,'-o','color','b');
+plot(originX_L,originY_L, 'k-', x_rotated, y_rotated, 'r-', x_rotaCenter, y_rotaCenter, 'bo');
+
+[xdot_rotated,ydot_rotated] = rotate_line_about_fix_center(mean(dotXpos_L_Mat),mean(dotYpos_L_Mat),theta,x_rotaCenter,y_rotaCenter);
+plot(xdot_rotated,ydot_rotated,'ko', 'MarkerFaceColor','k','MarkerSize', 10);
+
+
+% camroll(100);
 %----------------------------------------------------------------------
 %         turn line angle to position and plot mean result
 %----------------------------------------------------------------------
 
 % rightward    leftward
-if mark == 2  || mark == 3 || mark == 4
+if mark == 2  || mark == 3
     lineLengthDegree = 3.5;
     lineLengthPixel = deg2pix(lineLengthDegree,viewingDistance,screenXpixels,displaywidth);
     [LineAngle_ave] = RespMat2LineAngle_ave_forDelay(RespMat,intervalTimesMatSingle,gaborDistanceFromFixationDegree);
@@ -187,10 +207,10 @@ if mark == 2  || mark == 3 || mark == 4
         colorMap = mycolorMap(size(LineAngle_ave,1),1);
         graph(2) = scatter(dotXpos_L_delay,dotYpos_L_end,60,colorMap,'filled');
     elseif showwardmark == 'b'
-        colorMap = mycolorMap(1,1); % sum(LineAngle_ave(:,1)~=0)
-        graph(1) = scatter(dotXpos_R_delay(end),dotYpos_R_end(1),60,'g','filled');
-        colorMap = mycolorMap(1,1); % sum(LineAngle_ave(:,1)~=0)
-        graph(2) = scatter(dotXpos_L_delay(end),dotYpos_L_end(1),60,'m','filled');
+        colorMap = mycolorMap(size(LineAngle_ave,1),5);
+        graph(1) = scatter(dotXpos_R_delay,dotYpos_R_end,60,colorMap,'filled');
+        colorMap = mycolorMap(size(LineAngle_ave,1),1);
+        graph(2) = scatter(dotXpos_L_delay,dotYpos_L_end,60,colorMap,'filled');
     end
     
     
@@ -198,15 +218,18 @@ if mark == 2  || mark == 3 || mark == 4
     % ylabel('location of y axis on the screen','fontSize',30);
     % axis([0 600 0 400]);
     % h = [percLoca_L;percLoca_R;gaborTraj_L;gaborTraj_R;graph(1);graph(2)];
-    % legend(h,'perceived location(motion leftward)','perceived location(motion rightward)','gabor trajactory(motion leftward)','gabor trajactory(motion rightward)','Location','northeast');
+    % legend(h,'perceived location(motion leftward)','perceived location(motion rightward)',...
+    %     'gabor trajactory(motion leftward)','gabor trajactory(motion rightward)','Location','northeast');
     % [lgd, icons, plots, txt] = legend('show');
     %
     % ax = gca;
     % ax.FontSize = 20;
 end
-% set(gca,'box','off');
-axis equal;
+%----------------------------------------------------------------------
+%         figure propreties
+%----------------------------------------------------------------------
 set(gca,'Visible','off');
+axis equal;
 % set(gca,'XColor','none','YColor','none')
 set(gca,'XTick',[], 'YTick', []);
 set(gcf,'color','w');
