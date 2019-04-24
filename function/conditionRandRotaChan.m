@@ -4,7 +4,7 @@
 % for apparent motion direction task
 
 function [InternalDriftPhaseIncrFactor,xframeFactor,yframeFactor,gaborfixationFactor,...
-    orientation,gaborStartLocMoveXFactor,gaborStartLocMoveYFactor] = conditionRand(condition,subIlluDegreeNow);
+    orientation,gaborStartLocMoveXFactor,gaborStartLocMoveYFactor] = conditionRandRotaChan(condition,subIlluDegreeNow);
         % InternalDriftPhaseIncrPerFrame > 0 internal drift leftward
         % InternalDriftPhaseIncrPerFrame < 0 internal drift rightward
         % cueVerDisPixFactor = 1  fixation upward

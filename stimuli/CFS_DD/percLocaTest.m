@@ -236,11 +236,9 @@ for block = 1:blockNumber
             
             if frame == 1
                 if condition == 'upperRight_rightward'
-                    gaborLoc.Start_R = gaborLocation;
-                    
+                    gaborStartLocation_R = gaborLocation;
                 elseif  condition == 'upperRight_leftward'
-                    gaborLoc.Start_L = gaborLocation;
-                    
+                    gaborStartLocation_L = gaborLocation;
                 end
             end
                     
@@ -273,31 +271,21 @@ for block = 1:blockNumber
         Screen('Flip',window);
         % wait 0.3 to present adjustable dot
         WaitSecs(gauss.testDotDelay);
-
-        %----------------------------------------------------------------------
-        %                       save the gabor end location
-        %----------------------------------------------------------------------
         
-        if condition == 'upperRight_rightward'
-            gaborLoc.End_R = gaborLocation;
-        elseif  condition == 'upperRight_leftward'
-            gaborLoc.End_L = gaborLocation;
-        end
-        
-%         if condition == 'upperRight_rightward'
-%             gaborLoc.Cue_R = cueLocation;
-%         elseif  condition == 'upperRight_leftward'
-%             gaborLoc.Cue_L = cueLocation;
-%         end
-                
         %----------------------------------------------------------------------
-        %%%                         adjustable flash setting
+        %%%                         adjustable dot setting
         %----------------------------------------------------------------------
         
         % Now we wait for a keyboard button signaling the observers response.
         % The left arrow key signals a "left" response and the right arrow key
         % a "right" response. You can also press escape if you want to exit the
         % program
+        if condition == 'upperRight_rightward' 
+           gaborEndLocation_R = gaborLocation;
+        elseif  condition == 'upperRight_leftward'
+            gaborEndLocation_L = gaborLocation;       
+        end
+        
         t1 = GetSecs;
         respToBeMade = true;
         
@@ -307,24 +295,7 @@ for block = 1:blockNumber
                 - xframeFactor * xframe(frame), yCenter +  gaborStartLocMoveYFactor * gaborStartLocMoveYPixel + yframeFactor * yframe(frame));        
         gaborEndLocaMid = CenterRectOnPointd(gabor.rect, xCenter  + gaborfixationFactor * gaborDistanceFromFixationPixel + gaborStartLocMoveXFactor * gaborStartLocMoveXPixel  ...
            , yCenter +  gaborStartLocMoveYFactor * gaborStartLocMoveYPixel + yframeFactor * yframe(frame));
-        
-        %----------------------------------------------------------------------
-        %                       save the adjustable flash location
-        %----------------------------------------------------------------------
-        
-        if condition == 'upperRight_rightward'
-            gaborLoc.End_R = gaborLocation;
-            gaborLoc.Phy_R = gaborLocation;
-            gaborLoc.Perc_R = gaborLocationPerc;
-            gaborLoc.Mid_R = gaborEndLocaMid;
-        elseif  condition == 'upperRight_leftward'
-            gaborLoc.End_L = gaborLocation;
-            gaborLoc.Phy_L = gaborLocation;
-            gaborLoc.Perc_L = gaborLocationPerc;
-            gaborLoc.Mid_L = gaborEndLocaMid;                   
-        end
-       
-       % RespMat column 8    1 2 3
+
         dotLoca = [gaborLocationPhy; gaborEndLocaMid; gaborLocationPerc];
         
 

@@ -24,7 +24,9 @@ for delay = 1:length(LineAngle_ave)
     end
     
 end
-dotYpos_end = repmat(dotYpos_end,length(LineAngle_ave),1)';
+
+
+dotYpos_end = repmat(dotYpos_end,sum(LineAngle_ave(:,1)~=0),1)';
 
 
 end

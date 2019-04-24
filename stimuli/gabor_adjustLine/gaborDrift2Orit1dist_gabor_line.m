@@ -1,6 +1,6 @@
 %% my first gabor drift
-% illusion in the 2 different location and 2 directions
-% with test gabor change to green flash
+% illusion in the 2 different directions
+% with test gabor and tell the orientation of the adjustable line 
 
 %% clear the workspace
 close all;
@@ -213,11 +213,9 @@ for block = 1:blockNumber
             
             if frame == 1
                 if condition == 'upperRight_rightward'
-                    gaborLoc.Star_R = gaborLocation;
-                    
+                    gaborLoc.Start_R = gaborLocation;                  
                 elseif  condition == 'upperRight_leftward'
-                    gaborLoc.Start_L = gaborLocation;
-                    
+                    gaborLoc.Start_L = gaborLocation; 
                 end
             end
             
@@ -225,23 +223,7 @@ for block = 1:blockNumber
             % at the end of the gabor generate a green flash
             % N > 0 : round to N digits to the right of the decimal point.
             % so -2 means generate flash for 1 frame
-%             if frame > (round(gabor.stimulusTime * framerate) - 2)
-%                 dotXpos_gabor = (gaborLocation(1)+gaborLocation(3))/2;
-%                 dotYpos_gabor = (gaborLocation(2)+gaborLocation(4))/2;
-%                 
-%                 [dstRects,flash] = gaussianDot(gauss.dotSizePix,gauss.Dim,dotXpos_gabor,dotYpos_gabor,grey,whitecolor,gauss.standDevia,gauss.dotFlag);
-%                 % Draw the dot to the screen. For information on the command used in
-%                 % this line type "Screen DrawDots?" at the command line (without the
-%                 % brackets) and press enter. Here we used good antialiasing to get nice
-%                 % smooth edges
-%                 %Screen('DrawDots', window, [dotXpos_gabor dotYpos_gabor], gabor.DimPix, dotColor, [], 2);
-%                 
-%                 % Draw the gaussian apertures  into our full screen aperture mask
-%                 Screen('BlendFunction', window, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-%                 masktex = Screen('MakeTexture', window, flash);
-%                 Screen('DrawTextures', window, masktex,[],dstRects);
-%                 
-%             else
+            
                 
                 Screen('DrawTextures', window, gabor.tex, [], gaborLocation, orientation, [], [], [], [],...
                     kPsychDontDoRotation, gabor.propertiesMatFirst');
@@ -274,43 +256,31 @@ for block = 1:blockNumber
         t0 = GetSecs;
         Screen('DrawDots', window,[xCenter,   yCenter], 10, [255 255 255 255], [], 2);
         %----------------------------------------------------------------------
-        %                       save the gabor end location
+        %        save the gabor end location and cue location
         %----------------------------------------------------------------------
-        
         if condition == 'upperRight_rightward'
             gaborLoc.End_R = gaborLocation;
         elseif  condition == 'upperRight_leftward'
             gaborLoc.End_L = gaborLocation;
         end
-        
         if condition == 'upperRight_rightward'
             gaborLoc.Cue_R = cueLocation;
         elseif  condition == 'upperRight_leftward'
             gaborLoc.Cue_L = cueLocation;
         end
+    
+    %----------------------------------------------------------------------
+    %                       draw test gabor
+    %----------------------------------------------------------------------
         
-       
-        %----------------------------------------------------------------------
-        %                       draw test gabor(second green flash)
-        %----------------------------------------------------------------------
-        
-
         
         % draw the green gaussian flash at the cue location
-        dotXpos_cue = (cueLocation(1) + cueLocation(3))/2;
-        dotYpos_cue = (cueLocation(2) + cueLocation(4))/2;
+        [dotXpos_cue,dotYpos_cue] = findcenter(cueLocation);
+%         dotXpos_cue = (cueLocation(1) + cueLocation(3))/2;
+%         dotYpos_cue = (cueLocation(2) + cueLocation(4))/2;
+        Screen('DrawTextures', window, gabor.tex, [], cueLocation, orientation, [], [], [], [],...
+            kPsychDontDoRotation, gabor.propertiesMatFirst');
         
-        Screen('BlendFunction', window, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        
-        [dstRects,flash] = gaussianDot(gauss.dotSizePix,gauss.Dim,dotXpos_cue,dotYpos_cue,grey,whitecolor,gauss.standDevia,gauss.dotFlag);
-        masktex = Screen('MakeTexture', window, flash);
-        %                 Screen('DrawDots', window, [dotXpos_cue dotYpos_cue], dotSizePix, dotColor, [], 2);
-        
-        % Draw the gaussian apertures  into our full screen aperture mask
-        
-        Screen('DrawTextures', window, masktex,[],dstRects);
-        
-        Screen('BlendFunction', window, GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA);
         Screen('Flip',window);
         
         

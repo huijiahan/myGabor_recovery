@@ -52,14 +52,10 @@ elseif dotFlag == 2
 %     flash(:,:,4) = whitecolor * gauss .* mask;
 
 % black flash
-elseif dotFlag == 3
-   
+elseif dotFlag == 3   
     flash(:,:,1) = 0;
     flash(:,:,2) = 0;
     flash(:,:,3) = 0;
-
-    
-    
 
 end
 

@@ -12,24 +12,21 @@ Perc_prop_mark = 'n';
 % Perc_loca_mark = input('>>>> scatter perceived location? (e.g.: n or y):  ','s');
 Perc_loca_mark = 'n';
 
-mark = 1;
-sbjnames = {'guofanhua'}; % 'linweiru','guofanhua','wangzetong','huijiahan664'，'sunliwei'
+mark = 4;
+sbjnames = {'huijiahan'}; % 'linweiru','guofanhua','wangzetong','huijiahan664'，'sunliwei'
 % for test flash apparent motion line adjust
 if mark == 1
-    cd '../../data/GaborDrift/flash_lineAdjust/main_AP'     
-    lineAngleColumn = 7;
+    cd '../../data/GaborDrift/flash_lineAdjust/main_AP'
 elseif mark == 2
-    % 1.5 dva
     cd '../../data/GaborDrift/flash_lineAdjust/circle_control'
-    lineAngleColumn = 7;
-    
     % for test gabor line adjust
 elseif mark == 3
     cd '../../data/GaborDrift/flash_lineAdjust/percLocaTest'
-
-    
+elseif mark == 4
+    cd '../../data/GaborDrift/flash_lineAdjust/onewhiteflash_lineAdjust'
 end
 
+lineAngleColumn = 7;
 
 
 for sbjnum = 1:length(sbjnames)
@@ -39,10 +36,14 @@ for sbjnum = 1:length(sbjnames)
     Files = dir([s3]);
     load (Files.name);
     gaborMatSingle = {'upperRight_rightward','upperRight_leftward'};
-    intervalTimesMatSingle = [0 0.05 0.1 0.15 0.2 0.25 0.3 0.35];% [0 50 100 150 200 250 300 350]* 0.001;
+    if mark == 4
+        intervalTimesMatSingle = [0 0.25 0.5 0.75 1];
+    else
+        intervalTimesMatSingle = [0 0.05 0.1 0.15 0.2 0.25 0.3 0.35];% [0 50 100 150 200 250 300 350]* 0.001;
+    end
     gaborDistanceFromFixationDegree = [10];
-    LineDegree10dva_left = zeros(8,1);
-    LineDegree10dva_right = zeros(8,1);
+    LineDegree10dva_left = zeros(length(intervalTimesMatSingle),1);
+    LineDegree10dva_right = zeros(length(intervalTimesMatSingle),1);
     
     
     
@@ -86,10 +87,10 @@ for sbjnum = 1:length(sbjnames)
     trialNumPerCondition = length(RespMat)/(length(intervalTimesMatSingle)*length(gaborDistanceFromFixationDegree));
     LineAngle_ave = [LineDegree10dva_right LineDegree10dva_left]/(trialNumPerCondition/2);
     
-    [dotXpos_L_st,dotYpos_L_st] = findcenter(gaborStartLocation_L);
-    [dotXpos_L_end,dotYpos_L_end] = findcenter(gaborEndLocation_L);
-    [dotXpos_R_st,dotYpos_R_st] = findcenter(gaborStartLocation_R);
-    [dotXpos_R_end,dotYpos_R_end] = findcenter(gaborEndLocation_R);
+    [dotXpos_L_st,dotYpos_L_st] = findcenter(gaborLoc.Start_L);
+    [dotXpos_L_end,dotYpos_L_end] = findcenter(gaborLoc.End_L);
+    [dotXpos_R_st,dotYpos_R_st] = findcenter(gaborLoc.Star_R);
+    [dotXpos_R_end,dotYpos_R_end] = findcenter(gaborLoc.End_R);
     
     
     originX_L = [dotXpos_L_st,dotXpos_L_end];
@@ -101,7 +102,7 @@ for sbjnum = 1:length(sbjnames)
     %     plot the gabor trajactory
     %%%--------------------------------------
     
-    if Perc_loca_mark == 'y'       
+    if Perc_loca_mark == 'y'
         gaborTraj_L = plot(originX_L,originY_L,'r-','MarkerFaceColor','r');
         hold on;
         gaborTraj_R = plot(originX_R,originY_R,'b-','MarkerFaceColor','b');
@@ -131,8 +132,8 @@ for sbjnum = 1:length(sbjnames)
             title('apparent motion location detect -- control','FontSize',30);
         end
     end
-%     legend(['S' num2str(sbjnum)]);
-%     legend('S2');
+    %     legend(['S' num2str(sbjnum)]);
+    %     legend('S2');
     %%%--------------------------------------------------
     %     plot the perceived proportion
     %%%--------------------------------------------------
@@ -155,15 +156,15 @@ for sbjnum = 1:length(sbjnames)
     figure;
     if Perc_prop_mark == 'y'
         if mark == 1
-            plot(intervalTimesMatSingle*1000,(Perc_prop(:,sbjnum))*100,'color','r');            
+            plot(intervalTimesMatSingle*1000,(Perc_prop(:,sbjnum))*100,'color','r');
         elseif mark == 2
             plot(intervalTimesMatSingle*1000,(Perc_prop(:,sbjnum))*100,'color','b');
         end
         hold on;
         %         set(gca,'XAxisLocation','top','YAxisLocation','left','ydir');
-    
+        
     end
-
+    
 end
 
 if Perc_prop_mark == 'n'
@@ -180,12 +181,12 @@ if Perc_prop_mark == 'n'
         legend([h2],'control');
     end
 end
-    title('proportion of apparent motion perceived from the end of perceived path','FontSize',20);
-    axis([-10 400 -10 100]);
-    xlabel('interval time between illusion and test gabor(ms)','fontSize',30);
-    ylabel('proportion from perceived endpoint','FontSize',20);
+title('proportion of apparent motion perceived from the end of perceived path','FontSize',20);
+axis([-10 400 -10 100]);
+xlabel('interval time between illusion and test gabor(ms)','fontSize',30);
+ylabel('proportion from perceived endpoint','FontSize',20);
 
-    % %     legend(sbjnames,'Location','northeast')
+% %     legend(sbjnames,'Location','northeast')
 ax = gca;
 ax.FontSize = 20;
 hold on;
