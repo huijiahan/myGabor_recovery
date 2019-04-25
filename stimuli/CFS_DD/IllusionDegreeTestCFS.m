@@ -127,27 +127,29 @@ load /Users/jia/Documents/matlab/DD_illusion/myGabor/function/CFS/CFSMatMovie.ma
 CFSMatMovie=Shuffle(CFSMatMovie);
 CFSFrames = 100;
 CFScont = 1;
-
-
 % load CFS images and Make Textures
-CFSsize_scale = 0.25;
-xsize = 256;
-ysize = 256;
-[x2,y2] = meshgrid(-xsize/2:xsize/2-1,-ysize/2:ysize/2-1); % make a axis
-r2 = sqrt(x2.^2+y2.^2);
-% pict = 256*rand(ysize,xsize,3);
-mask2 = r2<xsize/2.*CFSsize_scale;
+% CFSsize_scale = 0.9;
 
-% pict(:,:,4) = mask2;
-% pict(:,:,4) = uint8(pict(:,:,4)*255);
 for i=1:CFSFrames
     CFSMatMovie{i} =CFScont*(CFSMatMovie{i}-128)+128;
     CFSImage=CFSMatMovie{i};  %.*mask+ContraN;
-    CFSImage(:,:,4)=mask2*255;
-    
-    CFSImage = CFSImage((256/2-128*CFSsize_scale):(256/2+128*CFSsize_scale),(256/2-128*CFSsize_scale):(256/2+128*CFSsize_scale),:);
+    %     CFSImage(:,:,4)=mask2*255;
+    %                 CFSImage = CFSImage((256/2-128*CFSsize_scale):(256/2+128*CFSsize_scale),(256/2-128*CFSsize_scale):(256/2+128*CFSsize_scale),:);
     CFSTex(i)=Screen('MakeTexture',window,CFSImage);
 end
+
+
+% xsize = 256;
+% ysize = 256;
+% [x2,y2] = meshgrid(-xsize/2:xsize/2-1,-ysize/2:ysize/2-1); % make a axis
+% r2 = sqrt(x2.^2+y2.^2);
+% pict = 256*rand(ysize,xsize,3);
+% mask2 = r2<xsize/2.*CFSsize_scale;
+
+% pict(:,:,4) = mask2;
+% pict(:,:,4) = uint8(pict(:,:,4)*255);
+
+
 
 %----------------------------------------------------------------------
 %                       Experimental loop
@@ -286,6 +288,10 @@ for block = 1: blockNumber
                 CFSloca_L = [dotXpos_L_st   dotYpos_L_st   dotXpos_L_end    dotYpos_L_end];
             end
             
+            
+            
+            
+            
             %             if condition == 'upperRight_rightward'
             %                 gaborLoc.Cue_R = cueLocation;
             %             elseif  condition == 'upperRight_leftward'
@@ -309,9 +315,9 @@ for block = 1: blockNumber
             Screen('DrawDots', window,[xCenter, yCenter], 10, [255 255 255 255], [], 2);
             %             Screen('DrawTexture',window,backTex);
             if condition == 'upperRight_rightward'
-                Screen('DrawTexture',window,CFSTex(w),[]); % CFSloca_R
+                Screen('DrawTexture',window,CFSTex(w)); % CFSloca_R
             elseif  condition == 'upperRight_leftward'
-                Screen('DrawTexture',window,CFSTex(w),[]); % ,CFSloca_L
+                Screen('DrawTexture',window,CFSTex(w)); % ,CFSloca_L
             end
             
             

@@ -97,39 +97,43 @@ end
 %     plot the result of leftward
 %%%--------------------------------------------------
 
-% plot(intervalTimesMatSingle*1000,(Perc_prop_norm_L * 100),'-o','color',color);
-% Perc_prop_ste_L = ste(Perc_prop_L*100,1);
-% hold on;
+plot(intervalTimesMatSingle*1000,(Perc_prop_norm_L * 100),'-o','color','r');
+Perc_prop_ste_L = ste(Perc_prop_L*100,1);
+hold on;
 % errorbar(intervalTimesMatSingle*1000,(Perc_prop_norm_L * 100),Perc_prop_ste_L,color_error);
+
 %%%--------------------------------------------------
-%     plot the result of leftward
+%     plot the result of rightward
 %%%--------------------------------------------------
-% plot(intervalTimesMatSingle*1000,(Perc_prop_norm_R * 100),'-o','color','b');
-% Perc_prop_ste_R = ste(Perc_prop_R*100,1);
-% hold on;
+plot(intervalTimesMatSingle*1000,(Perc_prop_norm_R * 100),'-o','color','b');
+Perc_prop_ste_R = ste(Perc_prop_R*100,1);
+hold on;
 % errorbar(intervalTimesMatSingle*1000,(Perc_prop_norm_R * 100),Perc_prop_ste_R,'b.');
+legend('internal motion leftward','internal motion rightward');
+% yline(50,'k','lineWidth',.5);
 %%%--------------------------------------------------
 %     plot the result of all
 %%%--------------------------------------------------
-plot(intervalTimesMatSingle*1000,(Perc_prop_norm * 100),'-o','color','g');
-Perc_prop_ste = ste(Perc_prop*100,1);
-hold on;
-errorbar(intervalTimesMatSingle*1000,(Perc_prop_norm * 100),Perc_prop_ste,'g.');
+% plot(intervalTimesMatSingle*1000,(Perc_prop_norm * 100),'-o','color','g');
+% Perc_prop_ste = ste(Perc_prop*100,1);
+% hold on;
+% errorbar(intervalTimesMatSingle*1000,(Perc_prop_norm * 100),Perc_prop_ste,'g.');
 
 % [p,tbl,stats] = anova1(Perc_prop_L);
 
 
 
 
-title('proportion of apparent motion perceived from the end of perceived path','FontSize',20);
-axis([-10 1000 0 120]);
-xlabel('interval time between illusion and test gabor(ms)','fontSize',30);
+title('proportion of whith flash perceived from the end of perceived path','FontSize',20);
+axis([0 1050 0 100]);
+
+xlabel('time delay(ms)','fontSize',30);
 ylabel('proportion from perceived endpoint','FontSize',20);
 % legend('AP','control')
 % %     legend(sbjnames,'Location','northeast')
 ax = gca;
 ax.FontSize = 20;
 set(gcf,'color','w');
-set(gca,'box','off');
+% set(gca,'box','off');
 %     title(sbjnames,'FontSize',40);
 % cd '../../../../analysis/flash_lineAdjust'

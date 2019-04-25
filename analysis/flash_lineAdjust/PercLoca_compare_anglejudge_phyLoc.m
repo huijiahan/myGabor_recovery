@@ -11,7 +11,7 @@ eachPercLoc = 'y';
 showwardmark = 'b';
 % decide analysis which distance
 mark = 1;
-sbjnames = {'lucy'};  % 'huijiahan','lucy','hehuixia','guofanhua','linweiru' huijiahan-2019-4-22-9-59
+sbjnames = {'huijiahan'};  % 'huijiahan','lucy','hehuixia','guofanhua','linweiru' huijiahan-2019-4-22-9-59
 % for test flash apparent motion line adjust
 if mark == 1
     cd '../../data/GaborDrift/flash_lineAdjust/percLocaTest/'
@@ -135,10 +135,10 @@ end
 %----------------------------------------------------------------------
 %             plot gabor trajactory
 %----------------------------------------------------------------------
-%
+
 gaborStartLocation_L = gaborLoc.Start_L;
 gaborEndLocation_L = gaborLoc.End_L;
-gaborStartLocation_R = gaborLoc.Start_R;
+gaborStartLocation_R = gaborLoc.Start_R; %  if hjh gaborLoc.Star_R 
 gaborEndLocation_R = gaborLoc.End_R;
 
 [dotXpos_L_st,dotYpos_L_st] = findcenter(gaborStartLocation_L);
@@ -159,7 +159,7 @@ if showwardmark == 'l'
 elseif showwardmark == 'r'
     gaborTraj_R = plot(originX_R,originY_R,'-o','color','b');
 elseif showwardmark == 'b'
-        gaborTraj_L = plot(originX_L,originY_L,'-o','color','r');
+    gaborTraj_L = plot(originX_L,originY_L,'-o','color','r');
     hold on;
     gaborTraj_R = plot(originX_R,originY_R,'-o','color','b');
 end
@@ -187,10 +187,11 @@ if mark == 2  || mark == 3 || mark == 4
         colorMap = mycolorMap(size(LineAngle_ave,1),1);
         graph(2) = scatter(dotXpos_L_delay,dotYpos_L_end,60,colorMap,'filled');
     elseif showwardmark == 'b'
+        %from darker to lighter = delay 0 to 350 
         colorMap = mycolorMap(1,1); % sum(LineAngle_ave(:,1)~=0)
-        graph(1) = scatter(dotXpos_R_delay(end),dotYpos_R_end(1),60,'g','filled');
+        graph(1) = scatter(dotXpos_R_delay(end),dotYpos_R_end(end),60,'g','filled');% g  colorMap
         colorMap = mycolorMap(1,1); % sum(LineAngle_ave(:,1)~=0)
-        graph(2) = scatter(dotXpos_L_delay(end),dotYpos_L_end(1),60,'m','filled');
+        graph(2) = scatter(dotXpos_L_delay(end),dotYpos_L_end(end),60,'m','filled'); % m   colorMap
     end
     
     
@@ -206,7 +207,8 @@ if mark == 2  || mark == 3 || mark == 4
 end
 % set(gca,'box','off');
 axis equal;
-set(gca,'Visible','off');
+box on;
+% set(gca,'Visible','off');
 % set(gca,'XColor','none','YColor','none')
 set(gca,'XTick',[], 'YTick', []);
 set(gcf,'color','w');
