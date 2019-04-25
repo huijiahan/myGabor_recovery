@@ -36,7 +36,7 @@ grey = whitecolor / 2;
 
 
 % set the window size
-winSize = [];   %[0 0 1024 768];
+winSize = [0 0 1024 768];   %[0 0 1024 768];
 
 
 %----------------------------------------------------------------------
@@ -81,34 +81,24 @@ rightKey = KbName('RightArrow');
 % Experiment setup
 % fprintf('subject_name is',);
 
-trialNumber = 64; % have to triple times of 8 which is the number of the interval time and 9 conditions
-blockNumber = 8;
+trialNumber = 10; % have to triple times of 8 which is the number of the interval time and 9 conditions
+blockNumber = 1;
 
+all = RespStartMatrix();
 
-responseVector = []; %
-% Make a vector to record the interval time for each trial
-intervalTimesVector = []; % reshape(zeros(trialNumber,blockNumber),[],1);
-TrialAll = [];
-BlockAll = [];
-conditionAll = [];
-responseTimeVector=[];
 % all the conditions 9
 gaborMatSingle = {'upperRight_rightward','upperRight_leftward'};
 % gaborMatSingle = {'upperLeft_rightward','lowerLeft_rightward'};
 % interval time between cue and gabor
-intervalTimesMatSingle = [0 0.05 0.1 0.15 0.2 0.25 0.3 0.35];   % intervalTime second
-
+% intervalTimesMatSingle = [0 0.05 0.1 0.15 0.2 0.25 0.3 0.35];   % intervalTime second
+intervalTimesMatSingle = [0 0.25 0.5 0.75 1];
 
 % gabor location from center in angle  but fixation move left 3 degree [4 5
 % 6 7] means [7 8 9 10] dva
 xCenter = xCenter - gabor.fixationPixel;
 yCenter = yCenter;
 
-gaborDistanceFromFixationDegree = [7 10];   % visual angle degree
-gaborDistanceFromFixationDegreeAll = [];
-
-
-
+gaborDistanceFromFixationDegree = [10];   % visual angle degree
 
 % trial repeatTimes of each combined condition
 repeatTimes = trialNumber/(length(gaborMatSingle)*length(intervalTimesMatSingle)...
@@ -128,25 +118,29 @@ for i1 = 1:length(factor1)
     end
 end
 subData = repmat(pickupData,repeatTimes,1);
-% blockData = [subData(Shuffle(1:length(subData)),:)];
-blockData = subData;
+blockData = [subData(Shuffle(1:length(subData)),:)];
+% blockData = subData;
 
 
 %----------------------------------------------------------------------
-%%%                         test gaobor parameter
+%%%                         test white flash parameter
 %----------------------------------------------------------------------
 
-cueShowTime = 0.0167;  % 0.2
+time.FlashShow = 0.0167;  % 0.2
 % Make a vector to record the response for each trial
 cueVerDisDegree = 3.5;  % negtive number means higher;   positive number means lower
 cueVerDisPix = deg2pix(cueVerDisDegree,viewingDistance,screenXpixels,displaywidth);
 % flash dot colot of gaussian dot
-dotColor = [0 0.1 0];
+% dotColor = [0 0.1 0];
 dotSizePix = 200;
 % gaussDim = 50;
+% dot setting
+gauss.dotFlag = 2; % 1 is green flash   2 is white flash
+gauss.standDevia = 5;% size of the flash
+gauss.Dim = round(deg2pix(gabor.VisualAngle,viewingDistance,screenXpixels,displaywidth));
 
-gaussDimVisualAngle = 5;  % gabor visual angle
-gaussDim = round(deg2pix(gabor.VisualAngle,viewingDistance,screenXpixels,displaywidth));
+% gaussDimVisualAngle = 5;  % gabor visual angle
+% gaussDim = round(deg2pix(gabor.VisualAngle,viewingDistance,screenXpixels,displaywidth));
 
 %----------------------------------------------------------------------
 %                       Experimental loop
@@ -154,19 +148,6 @@ gaussDim = round(deg2pix(gabor.VisualAngle,viewingDistance,screenXpixels,display
 
 
 for block = 1:blockNumber
-    
-    
-    
-    %----------------------------------------------------------------------
-    %%%                         stimulus Recording
-    %----------------------------------------------------------------------
-    % Record the stimulus by frame
-    rec = 0;   % Rec = 1 begin recording
-    mov.name = 'doubledrift';
-    mov.framerate = 60;
-    mov.dir = cd;
-    mov = recdisplay(rec,mov,'create');
-    
     
     for trial = 1: trialNumber
         
@@ -191,14 +172,10 @@ for block = 1:blockNumber
         
         condition = string(gaborMatSingle(blockData(trial,2)));
         
-        
         [InternalDriftPhaseIncrFactor,xframeFactor,yframeFactor,cueVerDisPixFactor,gaborfixationFactor,...
-    orientation,subIlluDegree,gaborStartLocMoveXFactor,gaborStartLocMoveYFactor] = conditionRandDis(condition,blockData,trial);
-        %     if  gabor.SpeedFrame > 0
-        yframe = [1:gabor.SpeedFrame:300];
-        %     else
-        %         yframe = [1:300];
-        %     end
+            orientation,subIlluDegree,gaborStartLocMoveXFactor,gaborStartLocMoveYFactor,meanSubIlluDegree] = conditionRandDis(condition,blockData,trial);
+        
+        yframe = [1:gabor.SpeedFrame*cos(subIlluDegree*pi/360):500];
         xframe =  yframe * tan(subIlluDegree*pi/360);
         
         
@@ -210,41 +187,54 @@ for block = 1:blockNumber
             
             % set the middle of the gabor path 7 or 10 dva away from the fixation
             % so the direction of gabor is crossed in the middle of the path
-            gaborStartLocMoveXDegree =  (gabor.pathLengthDegree/2)* tan(subIlluDegree/180*pi);
-            gaborStartLocMoveYDegree =  gabor.pathLengthDegree/2;
+            gaborStartLocMoveXDegree =  (gabor.pathLengthDegree/2)* sin((subIlluDegree/360)*pi);
+            gaborStartLocMoveYDegree =  gabor.pathLengthDegree/2 * cos((subIlluDegree/360)*pi);
             gaborStartLocMoveXPixel = deg2pix(gaborStartLocMoveXDegree,viewingDistance,screenXpixels,displaywidth);
             gaborStartLocMoveYPixel = deg2pix(gaborStartLocMoveYDegree,viewingDistance,screenXpixels,displaywidth);
             
             gaborLocation = CenterRectOnPointd(gabor.rect, xCenter  + gaborfixationFactor * gaborDistanceFromFixationPixel + gaborStartLocMoveXFactor * gaborStartLocMoveXPixel  ...
                 + xframeFactor * xframe(frame), yCenter +  gaborStartLocMoveYFactor * gaborStartLocMoveYPixel + yframeFactor * yframe(frame));
+            
             cueLocation = CenterRectOnPointd(gabor.rect, xCenter  + gaborfixationFactor * gaborDistanceFromFixationPixel + gaborStartLocMoveXFactor * gaborStartLocMoveXPixel,  ...
                 yCenter +  gaborStartLocMoveYFactor * gaborStartLocMoveYPixel + yframeFactor * yframe(frame) + cueVerDisPixFactor * cueVerDisPix);
+            %----------------------------------------------------------------------
+            %                       save the gabor start location
+            %----------------------------------------------------------------------
             
-            % at the end of the gabor generate a green flash
-            if frame > (round(gabor.stimulusTime * framerate) - 1)
-                dotXpos_gabor = (gaborLocation(1)+gaborLocation(3))/2;
-                dotYpos_gabor = (gaborLocation(2)+gaborLocation(4))/2;
-                
-                [dstRects,flash] = gaussianDot(dotSizePix,gaussDim,dotXpos_gabor,dotYpos_gabor,grey,whitecolor);
-                % Draw the dot to the screen. For information on the command used in
-                % this line type "Screen DrawDots?" at the command line (without the
-                % brackets) and press enter. Here we used good antialiasing to get nice
-                % smooth edges
-                %Screen('DrawDots', window, [dotXpos_gabor dotYpos_gabor], gabor.DimPix, dotColor, [], 2);
-                
-                % Draw the gaussian apertures  into our full screen aperture mask
-                Screen('BlendFunction', window, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-                masktex = Screen('MakeTexture', window, flash);
-                Screen('DrawTextures', window, masktex,[],dstRects);
-                
-            else
-                
-                Screen('DrawTextures', window, gabor.tex, [], gaborLocation, orientation, [], [], [], [],...
-                    kPsychDontDoRotation, gabor.propertiesMatFirst');
-                
-                % Randomise the phase of the Gabors and make a properties matrix
-                gabor.propertiesMatFirst(1) = gabor.propertiesMatFirst(1) + InternalDriftPhaseIncrFactor * gabor.InternalDriftPhaseIncrPerFrame;
+            if frame == 1
+                if condition == 'upperRight_rightward'
+                    gaborLoc.Start_R = gaborLocation;
+                    
+                elseif  condition == 'upperRight_leftward'
+                    gaborLoc.Start_L = gaborLocation;
+                    
+                end
             end
+            % at the end of the gabor generate a green flash
+            %             if frame > (round(gabor.stimulusTime * framerate) - 1)
+            %                 dotXpos_gabor = (gaborLocation(1)+gaborLocation(3))/2;
+            %                 dotYpos_gabor = (gaborLocation(2)+gaborLocation(4))/2;
+            %
+            %                 [dstRects,flash] = gaussianDot(dotSizePix,gaussDim,dotXpos_gabor,dotYpos_gabor,grey,whitecolor);
+            %                 % Draw the dot to the screen. For information on the command used in
+            %                 % this line type "Screen DrawDots?" at the command line (without the
+            %                 % brackets) and press enter. Here we used good antialiasing to get nice
+            %                 % smooth edges
+            %                 %Screen('DrawDots', window, [dotXpos_gabor dotYpos_gabor], gabor.DimPix, dotColor, [], 2);
+            %
+            %                 % Draw the gaussian apertures  into our full screen aperture mask
+            %                 Screen('BlendFunction', window, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            %                 masktex = Screen('MakeTexture', window, flash);
+            %                 Screen('DrawTextures', window, masktex,[],dstRects);
+            %
+            %             else
+            
+            Screen('DrawTextures', window, gabor.tex, [], gaborLocation, orientation, [], [], [], [],...
+                kPsychDontDoRotation, gabor.propertiesMatFirst');
+            
+            % Randomise the phase of the Gabors and make a properties matrix
+            gabor.propertiesMatFirst(1) = gabor.propertiesMatFirst(1) + InternalDriftPhaseIncrFactor * gabor.InternalDriftPhaseIncrPerFrame;
+            %             end
             
             Screen('BlendFunction', window, GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA);
             % Draw fixation
@@ -255,8 +245,7 @@ for block = 1:blockNumber
             Screen('Flip',window);
             
             %Screen('BlendFunction', window, GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA);
-            % Record the stimulus by frame
-            mov = recdisplay(rec,mov,'record',window);
+            
             
             
             %             gabor.SpeedFrame = gaborMoveSpeedPixel + gabor.SpeedFrame;
@@ -271,29 +260,35 @@ for block = 1:blockNumber
         intervalTimes = intervalTimesMatSingle(blockData(trial,3));
         WaitSecs(intervalTimes);
         
-        % stimulus recording
-        mov = recdisplay(rec,mov,'record',window,intervalTimes);
+        
         t0 = GetSecs;
         Screen('DrawDots', window,[xCenter,   yCenter], 10, [255 255 255 255], [], 2);
-        
-        
-        %         % Draw the cue gabor
-        %         Screen('DrawTextures', window, gabor.tex, [], cueLocation, orientation, [], [], [], [],...
-        %             kPsychDontDoRotation, gabor.propertiesMatFirst');
-        %         [dstRects,masktex]= gaussianDot[gabor.DimPix, dotXpos,dotYpos];
-        
         %----------------------------------------------------------------------
-        %                       draw test gabor(green flash)
+        %                       save the gabor end location
         %----------------------------------------------------------------------
         
+        if condition == 'upperRight_rightward'
+            gaborLoc.End_R = gaborLocation;
+        elseif  condition == 'upperRight_leftward'
+            gaborLoc.End_L = gaborLocation;
+        end
         
+        if condition == 'upperRight_rightward'
+            gaborLoc.Cue_R = cueLocation;
+        elseif  condition == 'upperRight_leftward'
+            gaborLoc.Cue_L = cueLocation;
+        end
+        
+        %----------------------------------------------------------------------
+        %                       draw test gabor(white flash)
+        %----------------------------------------------------------------------
         
         % draw the green gaussian flash at the cue location
         dotXpos_cue = (cueLocation(1) + cueLocation(3))/2;
         dotYpos_cue = (cueLocation(2) + cueLocation(4))/2;
         Screen('BlendFunction', window, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         
-        [dstRects,flash] = gaussianDot(dotSizePix,gaussDim,dotXpos_cue,dotYpos_cue,grey,whitecolor);
+        [dstRects,flash] = gaussianDot(dotSizePix,gauss.Dim,dotXpos_cue,dotYpos_cue,grey,whitecolor,gauss.standDevia,gauss.dotFlag);
         masktex = Screen('MakeTexture', window, flash);
         %                 Screen('DrawDots', window, [dotXpos_cue dotYpos_cue], dotSizePix, dotColor, [], 2);
         
@@ -302,33 +297,17 @@ for block = 1:blockNumber
         Screen('DrawTextures', window, masktex,[],dstRects);
         
         
-        Screen('Flip',window);
         Screen('BlendFunction', window, GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA);
-        
-        WaitSecs(cueShowTime);
-        
-        
-        %----------------------------------------------------------------------
-        %%%                         stimulus Recording
-        %----------------------------------------------------------------------
+        Screen('Flip',window);
+        WaitSecs(time.FlashShow);
         
         
-        % Record the stimulus by frame
-        mov = recdisplay(rec,mov,'record',window,cueShowTime);
         %         Screen('Flip',window);
         % Draw fixation after stimuli in buffer
         Screen('DrawDots', window,[xCenter,   yCenter], 10, [255 255 255 255], [], 2);
         % refresh the screen draw the buffer
         Screen('Flip',window);
         t1 = GetSecs;
-        
-        %----------------------------------------------------------------------
-        %%%                         stimulus Recording
-        %----------------------------------------------------------------------
-        
-        % Record the stimulus by frame
-        mov = recdisplay(rec,mov,'record',window,1);
-        
         
         
         % Now we wait for a keyboard button signaling the observers response.
@@ -353,33 +332,21 @@ for block = 1:blockNumber
         t2 = GetSecs;
         %         Record the response
         responseTime = t2-t1;
-        responseTimeVector = [responseTimeVector;responseTime];
-        responseVector = [responseVector;response];
-        TrialAll =  [TrialAll; trial];
-        BlockAll =[BlockAll; block];
+        %         all.lineAngle = [all.lineAngle;lineAngle];
+        all.responseTimeVector = [all.responseTimeVector;responseTime];
+        all.responseVector = [all.responseVector;response];
+        all.Trial =  [all.Trial; trial];
+        all.Block =[all.Block; block];
         %         conditionAll = gaborMat(gaborMatIndex(1:trialNumber));
-        conditionAll = [conditionAll;condition];
-        gaborDistanceFromFixationDegreeAll = [gaborDistanceFromFixationDegreeAll; gaborDistanceFromFixationDegreeNow];
-        intervalTimesVector = [intervalTimesVector;intervalTimes];
-        orientationAll = [orientationAll;orientation];
-        WaitSecs(1);
+        all.condition = [all.condition;condition];
+        all.gaborDistanceFromFixationDegree = [all.gaborDistanceFromFixationDegree; gaborDistanceFromFixationDegreeNow];
+        all.intervalTimesVector = [all.intervalTimesVector;intervalTimes];
+        %         orientationAll = [orientationAll;orientation];
+        % trial interval 0.8s
+        WaitSecs(0.8);
         
-        %----------------------------------------------------------------------
-        %%%                         stimulus Recording
-        %----------------------------------------------------------------------
+        RespMat = [all.Block all.Trial  all.condition all.intervalTimesVector all.gaborDistanceFromFixationDegree all.responseVector all.lineAngle all.responseTimeVector];
         
-        
-        %         open(vidObj);
-        %         currFrame = Screen('GetImage', window);
-        %         writeVideo(vidObj,currFrame);
-        %         imageArray = Screen('GetImage', window, [200 264 874 544]);
-        %         imageArray = [imageArray; {Screen('GetImage', window, [200 264 874 544])}];
-        
-        %     end
-        
-        % Record the stimulus by frame
-        mov = recdisplay(rec,mov,'finalize');
-        RespMat = [BlockAll TrialAll  conditionAll intervalTimesVector gaborDistanceFromFixationDegreeAll responseVector responseTimeVector];  %
     end
     %----------------------------------------------------------------------
     %                      save parameters files
@@ -389,19 +356,19 @@ for block = 1:blockNumber
     %     fileName = ['data/GaborDrift/' subject_name '-' num2str(time(1)) '-' num2str(time(2)) '-' num2str(time(3)) '-' num2str(time(4)) '-' num2str(time(5)) '.mat'];
     %     save(fileName,'RespMat','subIlluDegree','intervalTimesVector','InternalDriftCyclesPerSecond','gaborDistanceFromFixationDegree','gaborDimPix','viewingDistance','trialNumber','blockNumber');
     
-    end
-    
-    toc;
-    % close(vidObj);
-    
-    %----------------------------------------------------------------------
-    %                      save parameters files
-    %----------------------------------------------------------------------
-    time = clock;
-    % RespMat = [BlockAll TrialAll  conditionAll intervalTimesVector  responseVector];
-    fileName = ['../data/GaborDrift/simplified2loca/' subject_name '-' num2str(time(1)) '-' num2str(time(2)) '-' num2str(time(3)) '-' num2str(time(4)) '-' num2str(time(5)) '.mat'];
-    save(fileName,'RespMat','subIlluDegree','intervalTimesVector','cueVerDisDegree','gabor','viewingDistance','trialNumber','blockNumber');
-    
+end
+
+
+% close(vidObj);
+
+%----------------------------------------------------------------------
+%                      save parameters files
+%----------------------------------------------------------------------
+time = clock;
+% RespMat = [BlockAll TrialAll  conditionAll intervalTimesVector  responseVector];
+fileName = ['../../data/GaborDrift/simplified2loca/3.5dva_indicate_direc/' subject_name '-' num2str(time(1)) '-' num2str(time(2)) '-' num2str(time(3)) '-' num2str(time(4)) '-' num2str(time(5)) '.mat'];
+save(fileName);%,'RespMat','subIlluDegree','intervalTimesVector','cueVerDisDegree','gabor','viewingDistance','trialNumber','blockNumber');
+
 
 %----------------------------------------------------------------------
 %                       clear screen

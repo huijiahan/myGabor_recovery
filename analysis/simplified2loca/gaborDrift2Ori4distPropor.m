@@ -7,9 +7,9 @@ addpath '../../function';
 mark = 1;
 
 if mark == 1
-    cd '../../data/GaborDrift/simplified2loca'
+    cd '../../data/GaborDrift/simplified2loca/3.5dva_indicate_direc'
     % 0.5 dva
-    sbjnames = {'huijiahanfinal'};
+    sbjnames = {'k'};
 elseif mark ~= 1
     % 1.5 dva
     cd '../../data/GaborDrift/simplified2loca'

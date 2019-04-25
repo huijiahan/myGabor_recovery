@@ -391,7 +391,7 @@ for block = 1:blockNumber
     
 end
 
-toc;
+
 % close(vidObj);
 
 
