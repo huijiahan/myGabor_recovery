@@ -3,6 +3,8 @@
 function colorMap = mycolorMap(number,rgbmark)
 colorMaptemp = [];
 colorMap= [];
+
+% white 1    from dark to light 
 for gradua = 0.1:1/(number):1
     if rgbmark == 1    % red
         colorMaptemp = [gradua 0 0];

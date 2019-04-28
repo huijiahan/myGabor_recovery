@@ -11,6 +11,7 @@ sca;
 %                      set up Psychtoolbox and skip  sync
 %----------------------------------------------------------------------
 name = input('>>>> Participant name (e.g.: AB):  ','s');
+debug = 'y';
 subject_name = name;
 Screen('Preference', 'SkipSyncTests', 1);
 PsychDefaultSetup(2);
@@ -54,7 +55,7 @@ viewingDistance = 60; % subject distance to the screen
 %----------------------------------------------------------------------
 
 gabor = gaborParaSet(window,screenXpixels,displaywidth,viewingDistance,framerate);
-orientationAll = [];
+
 
 %----------------------------------------------------------------------
 %                       Keyboard information
@@ -63,9 +64,13 @@ orientationAll = [];
 % Define the keyboard keys that are listened for. We will be using the left
 % and right arrow keys as response keys for the task and the escape key as
 % a exit/reset key
+KbName('UnifyKeyNames');
 escapeKey = KbName('ESCAPE');
 leftKey = KbName('LeftArrow');
 rightKey = KbName('RightArrow');
+upKey = KbName('UpArrow');
+downKey = KbName('DownArrow');
+spaceKey = KbName('space');
 
 
 %----------------------------------------------------------------------
@@ -73,51 +78,78 @@ rightKey = KbName('RightArrow');
 %----------------------------------------------------------------------
 
 % Experiment setup
-trialNumber = 10; % have to be divided by  8
+trialNumber = 24; % have to be divided by  8
 blockNumber = 1;
 
-subIlluDegreeStep = 2;
-responseVector = []; %
-TrialAll = [];
-BlockAll = [];
-conditionAll = [];
-subIlluDegreeAll = [];
-gaborDistanceFromFixationDegreeAll = [];
+all = RespStartMatrix();
+
+
+
 % randomized the different conditions 4 locations 8 directions
 gaborMatSingle = {'upperRight_rightward','upperRight_leftward'};
 % gaborMatSingle = {'lowerLeft_rightward'};
-
+intervalTimesMatSingle = [0 0.25 0.5 1];    % intervalTime second
+gaborDistanceFromFixationDegree = [10];   % visual angle degree
 % gabor location from center in angle  but fixation move left 3 degree
 xCenter = xCenter - gabor.fixationPixel;
 yCenter = yCenter;
 
-gaborDistanceFromFixationDegree = [10];   % visual angle degree
 
-conditionFreq = (length(gaborMatSingle)*length(gaborDistanceFromFixationDegree));
-repeatFreq = trialNumber/conditionFreq;
+%
+% conditionFreq = (length(gaborMatSingle)*length(gaborDistanceFromFixationDegree));
+% repeatFreq = trialNumber/conditionFreq;
 
+% trial repeatTimes of each combined condition
+repeatTimes = trialNumber/(length(gaborMatSingle)*length(intervalTimesMatSingle)...
+    *length(gaborDistanceFromFixationDegree));
+% randomized the different conditions 4 locations 8 directions
+blockData = [];
 k = 0;
 factor1 = [1:length(gaborDistanceFromFixationDegree)]; % blockData 1
 factor2 = [1:length(gaborMatSingle)]; % blockData 2
+factor3 = [1:length(intervalTimesMatSingle)]; % blockData 3
 for i1 = 1:length(factor1)
     for i2 = 1:length(factor2)
-        k = k + 1;
-        subData(k,:) = [factor1(i1), factor2(i2)];
+        for i3 = 1:length(factor3)
+            k = k + 1;
+            pickupData(k,:) = [factor1(i1),factor2(i2),factor3(i3)];
+        end
     end
 end
 
+subData = repmat(pickupData,repeatTimes,1);
 
-blockData = repmat(subData,repeatFreq,1);
-% random sequence of condition
-randSequ = [blockData(Shuffle(1:length(blockData)),:)];
-% condition show in order
-% randSequ = blockData;
+if debug == 'n'
+    blockData = [subData(Shuffle(1:length(subData)),:)];
+elseif debug == 'y'
+    blockData = subData;
+end
 
-subIlluDegreeStart = 45;
-% store each trial each location subIlluDegree in the matrix
-subIlluDegree = zeros(conditionFreq,trialNumber/conditionFreq + 1);
-subIlluDegree(1:conditionFreq,1) = subIlluDegreeStart;
-gaborDistanceFromFixationPixel = deg2pix(gaborDistanceFromFixationDegree,viewingDistance,screenXpixels,displaywidth);
+% 3 means 3 locations  1 is physical  2 mid 3 perceived location
+%  dotLoca = [gaborLocationPhy; gaborEndLocaMid; gaborLocationPerc];
+dotLocaMat = repmat([1; 2; 3],trialNumber/3,1);
+dotLocaRand = dotLocaMat(Shuffle(1:length(dotLocaMat)));
+
+
+%----------------------------------------------------------------------
+%%%                         test gaobor parameter
+%----------------------------------------------------------------------
+
+time.secondFlashShow = 0.0167;  % before 0.2   0.0167 is for one frame
+time.lineDelay = 0.9;
+% Make a vector to record the response for each trial
+cueVerDisDegree = 3.5;  % negtive number means higher;   positive number means lower
+cueVerDisPix = deg2pix(cueVerDisDegree,viewingDistance,screenXpixels,displaywidth);
+% flash dot colot of gaussian dot
+gauss.dotSizePix = 200;
+
+% gauss.DimVisualAngle = 4;  % gabor visual angle
+gauss.Dim = round(deg2pix(gabor.VisualAngle,viewingDistance,screenXpixels,displaywidth));
+
+gauss.testDotDelay = 0.9;
+gauss.standDevia = 7 ;% small 7    big 4
+gauss.dotFlag = 2;   %  grey flash
+% gauss.dotAppeartime = 0.5;
 
 %----------------------------------------------------------------------
 %%%                     generate  CFS
@@ -171,75 +203,27 @@ for block = 1: blockNumber
         gabor.InternalDriftPhaseIncrPerFrame = gabor.InternalDriftCyclesPerFrame/framerate;
         
         
-        % set different condition parameters
         
-        %         [InternalDriftPhaseIncrFactor,xframeFactor,yframeFactor,cueVerDisPixFactor,gaborfixationFactor,...
-        %     orientation,subIlluDegree,gaborStartLocMoveXFactor,gaborStartLocMoveYFactor,meanSubIlluDegree] = conditionRandDis(condition,blockData,trial);
-        
-        % to make a subIlluDegree matrix  row is  gaborMatSingle type with
-        % one distance in gaborDistanceFromFixationDegree(row = 12)
-        % column is each trial result
-        % compare this type of trial in all the trials have been presented
-        % here determine the subIlluDegree  order
-        % first is gaborDistanceFromFixationDegree second is gaborMatSingle
-        % 7 upperRight_rightward
-        % 7 upperRight_leftward
-        % 10 upperRight_rightward
-        % 10 upperRight_leftward
-        
-        % blockData is in order and check each trial condition is in which
-        % condition set the subIlluDegreeIndex as the same order as
-        % blockData
-        % 7dva rightward 7dva leftward    10 dva rightward 10dva leftward
-        for q = 1:conditionFreq
-            if randSequ(trial,:) == blockData(q,:)
-                subIlluDegreeIndex = q;
-            end
-        end
+        condition = string(gaborMatSingle(blockData(trial,2)));
         
         
-        
-        eachCondIlluDegreeTimes1 = double(randSequ(1:trial,:) == randSequ(trial,:));
-        % count the frequency of this type of trial have been prensented
-        eachCondIlluDegreeTimes = length(find(int8(sum(eachCondIlluDegreeTimes1,2) == 2) == 1));
-        
-        
-        % subIlluDegreeIndex is in the same order as blockData
-        % 5 'upperRight_rightward',  5 'upperRight_leftward'   7 'upperRight_rightward',  7 'upperRight_leftward'
-        if eachCondIlluDegreeTimes == 1
-            subIlluDegreeNow = subIlluDegreeStart;
-        else
-            subIlluDegreeNow = subIlluDegree(subIlluDegreeIndex,eachCondIlluDegreeTimes);
-        end
-        
-        condition = string(gaborMatSingle(randSequ(trial,2)));
         [InternalDriftPhaseIncrFactor,xframeFactor,yframeFactor,cueVerDisPixFactor,gaborfixationFactor,...
-            orientation,subIlluDegree,gaborStartLocMoveXFactor,gaborStartLocMoveYFactor,meanSubIlluDegree] = conditionRandDis(condition);
-        % compare randSequ with subData and determine each trial's
-        % subIlluDegreeNow is in which condition in 12 condition
+            orientation,subIlluDegree,gaborStartLocMoveXFactor,gaborStartLocMoveYFactor,meanSubIlluDegree] = conditionRandDis(condition,blockData,trial);
         
-        
-        
-        %         subIlluDegree(find(TF)',trialIndex) = subIlluDegree(find(TF)',trialIndex-1);
-        %         TF = contains(gaborMatSingle,condition);
-        %         subIlluDegree(find(TF)',trialIndex) = subIlluDegree(find(TF)',trialIndex);
-        
-        yframe = [1:gabor.SpeedFrame:300];
-        xframe = yframe * tan(subIlluDegreeNow*pi/180);
-        
-        
-        
+        yframe = [1:gabor.SpeedFrame*cos(subIlluDegree*pi/360):500];
+        xframe =  yframe * tan(subIlluDegree*pi/360);
+
         
         for frame = 1: (gabor.stimulusTime * framerate)
             
             
-            gaborDistanceFromFixationDegreeNow = gaborDistanceFromFixationDegree(randSequ(trial,1));
+            gaborDistanceFromFixationDegreeNow = gaborDistanceFromFixationDegree(blockData(trial,1));
             gaborDistanceFromFixationPixel = deg2pix(gaborDistanceFromFixationDegreeNow,viewingDistance,screenXpixels,displaywidth);
             
             % set the middle of the gabor path 7 or 10 dva away from the fixation
             % so the direction of gabor is crossed in the middle of the path
-            gaborStartLocMoveXDegree =  (gabor.pathLengthDegree/2)* sin((subIlluDegreeNow/180)*pi);
-            gaborStartLocMoveYDegree =  gabor.pathLengthDegree/2 * cos((subIlluDegreeNow/180)*pi);
+            gaborStartLocMoveXDegree =  (gabor.pathLengthDegree/2)* sin((subIlluDegree/360)*pi);
+            gaborStartLocMoveYDegree =  gabor.pathLengthDegree/2 * cos((subIlluDegree/360)*pi);
             gaborStartLocMoveXPixel = deg2pix(gaborStartLocMoveXDegree,viewingDistance,screenXpixels,displaywidth);
             gaborStartLocMoveYPixel = deg2pix(gaborStartLocMoveYDegree,viewingDistance,screenXpixels,displaywidth);
             
@@ -250,6 +234,7 @@ for block = 1: blockNumber
             %                 + xframeFactor * xframe(frame), yCenter +  gaborStartLocMoveYFactor * gaborStartLocMoveYPixel+  yframeFactor * yframe(frame));
             gaborLocation = CenterRectOnPointd(gabor.rect, xCenter  + gaborfixationFactor * gaborDistanceFromFixationPixel + gaborStartLocMoveXFactor * gaborStartLocMoveXPixel  ...
                 + xframeFactor * xframe(frame), yCenter +  gaborStartLocMoveYFactor * gaborStartLocMoveYPixel + yframeFactor * yframe(frame));
+            
             %----------------------------------------------------------------------
             %                       save the gabor start location
             %----------------------------------------------------------------------
@@ -329,90 +314,124 @@ for block = 1: blockNumber
         
         %         Screen('DrawDots', window,[xCenter,  yCenter], 10, [255 255 255 255], [], 2);
         Screen('Flip',window);
+        WaitSecs(gauss.testDotDelay);
+   
+        %----------------------------------------------------------------------
+        %%%                         adjustable dot setting
+        %----------------------------------------------------------------------
         
-        % in rightward conditon respond left incre = -1; reight Incre = 1;
-        % in leftward conditon respond left Incre = 1; right Incre = -1;
-        
-        % different condition means different directions
-        internalPattern1 = "rightward";
-        internalPattern2 = "leftward";
-        iTF1 = contains(condition,internalPattern1);
-        iTF2 = contains(condition,internalPattern2);
-        
-        if iTF1 == 1
-            
-            % Now we wait for a keyboard button signaling the observers response.
-            % The left arrow key signals a "left" response and the right arrow key
-            % a "right" response. You can also press escape if you want to exit the
-            % program
-            
-            respToBeMade = true;
-            while respToBeMade
-                [keyIsDown,secs, keyCode] = KbCheck;
-                if keyCode(escapeKey)
-                    ShowCursor;
-                    sca;
-                    return
-                elseif keyCode(leftKey)
-                    response = 1;
-                    subIlluDegreeIncre = - subIlluDegreeStep;
-                    respToBeMade = false;
-                elseif keyCode(rightKey)
-                    response = 0;
-                    subIlluDegreeIncre =  subIlluDegreeStep;
-                    respToBeMade = false;
-                end
-            end
-        elseif iTF2 == 1
-            respToBeMade = true;
-            while respToBeMade
-                [keyIsDown,secs, keyCode] = KbCheck;
-                if keyCode(escapeKey)
-                    ShowCursor;
-                    sca;
-                    return
-                elseif keyCode(leftKey)
-                    response = 1;
-                    subIlluDegreeIncre = subIlluDegreeStep;
-                    respToBeMade = false;
-                elseif keyCode(rightKey)
-                    response = 0;
-                    subIlluDegreeIncre = - subIlluDegreeStep;
-                    respToBeMade = false;
-                end
-            end
+        % Now we wait for a keyboard button signaling the observers response.
+        % The left arrow key signals a "left" response and the right arrow key
+        % a "right" response. You can also press escape if you want to exit the
+        % program
+        if condition == 'upperRight_rightward' 
+           gaborEndLocation_R = gaborLocation;
+        elseif  condition == 'upperRight_leftward'
+            gaborEndLocation_L = gaborLocation;       
         end
         
+        t1 = GetSecs;
+        respToBeMade = true;
+        
+        % set 3 conditions of perceived location test dot        
+        gaborLocationPhy = gaborLocation;
+        gaborLocationPerc = CenterRectOnPointd(gabor.rect, xCenter  + gaborfixationFactor * gaborDistanceFromFixationPixel + gaborStartLocMoveXFactor * gaborStartLocMoveXPixel  ...
+                - xframeFactor * xframe(frame), yCenter +  gaborStartLocMoveYFactor * gaborStartLocMoveYPixel + yframeFactor * yframe(frame));        
+        gaborEndLocaMid = CenterRectOnPointd(gabor.rect, xCenter  + gaborfixationFactor * gaborDistanceFromFixationPixel + gaborStartLocMoveXFactor * gaborStartLocMoveXPixel  ...
+           , yCenter +  gaborStartLocMoveYFactor * gaborStartLocMoveYPixel + yframeFactor * yframe(frame));
+
+        dotLoca = [gaborLocationPhy; gaborEndLocaMid; gaborLocationPerc];
+        
+             
+        [dotXpos,dotYpos] = findcenter(dotLoca(dotLocaRand(trial),:));
+        
+              
+        moveStep = 1;        
+        while respToBeMade
+            
+            %             Screen('Flip',window);
+            Screen('DrawDots', window,[xCenter,   yCenter], 10, whiteColor, [], 2);
+            
+            [dstRects,flash] = gaussianDot(gauss.dotSizePix,gauss.Dim,dotXpos,dotYpos,grey,whiteColor,gauss.standDevia,gauss.dotFlag);
+            Screen('BlendFunction', window, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            masktex = Screen('MakeTexture', window, flash);
+            Screen('DrawTextures', window, masktex,[],dstRects);
+            %             Screen('BlendFunction', window, 'GL_SRC_ALPHA', 'GL_ONE_MINUS_SRC_ALPHA');
+            %Screen('DrawDots', window,[dotXpos,   dotYpos], 25, grey+0.1, [],2);
+            
+            Screen('BlendFunction', window, GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA);
+            Screen('Flip',window);
+            
+            
+                % the gauss dot could move either horizontally or vertically
+                [keyIsDown,secs,keyCode] = KbCheck;
+                if keyCode(escapeKey)
+                    ShowCursor;
+                    sca;
+                    return
+                elseif keyCode(leftKey)
+                    response = 1;
+                    dotXpos = dotXpos - moveStep;
+                    dotYpos = dotYpos;
+                elseif keyCode(rightKey)
+                    response = 2;
+                    dotXpos = dotXpos + moveStep;
+                    dotYpos = dotYpos;
+                elseif keyCode(upKey)
+                    response = 3;
+                    dotXpos = dotXpos;
+                    dotYpos = dotYpos - moveStep;
+                elseif keyCode(downKey)
+                    response = 4;
+                    dotXpos = dotXpos;
+                    dotYpos = dotYpos + moveStep;
+                elseif keyCode(spaceKey)
+                    response = NaN;
+                    dotXpos = dotXpos;
+                    dotYpos = dotYpos;
+                    respToBeMade = false;
+                end
+%             end
+           
+            
+        end
+        
+        Screen('BlendFunction', window, GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA);
+        Screen('DrawDots', window,[xCenter,   yCenter], 10, [255 255 255 255], [], 2);
+        Screen('Flip',window);
+%         WaitSecs(gauss.testDotDelay);
+        t2 = GetSecs;
+        %         Record the response
+        responseTime = t2-t1;
+        all.dotLocaRand = [all.dotLocaRand;dotLocaRand(trial)];
+       
+        all.dotXpos = [all.dotXpos;dotXpos];
+        all.dotYpos = [all.dotYpos;dotYpos];
+        all.responseTimeVector = [all.responseTimeVector;responseTime];
+        all.responseVector = [all.responseVector;response];
+        all.Trial =  [all.Trial; trial];
+        all.Block =[all.Block; block];
+        %         conditionAll = gaborMat(gaborMatIndex(1:trialNumber));
+        all.condition = [all.condition;condition];
+        all.gaborDistanceFromFixationDegree = [all.gaborDistanceFromFixationDegree; gaborDistanceFromFixationDegreeNow];
+        %         all.intervalTimesVector = [all.intervalTimesVector;intervalTimes];
+        all.orientation = [all.orientation;orientation];
+        WaitSecs(0.8);
+        
+        %----------------------------------------------------------------------
+        %%%                         stimulus Recording
+        %----------------------------------------------------------------------
         
         
-        % there is 2 distance of subIlluDegree
-        %         if gaborDistanceFromFixationDegreeNow == 7
-        % record condition
-        subIlluDegree(subIlluDegreeIndex,eachCondIlluDegreeTimes+1) = subIlluDegreeNow + subIlluDegreeIncre;
-        %         subIlluDegree(find(TF),trialIndex+1) =  subIlluDegree(find(TF),trialIndex) + subIlluDegreeIncre;
-        
-        % Record the response
-        subIlluDegreeAll = [subIlluDegreeAll;subIlluDegree(subIlluDegreeIndex,eachCondIlluDegreeTimes+1)];
-        responseVector = [responseVector;response];
-        TrialAll =  [TrialAll; trial];
-        gaborDistanceFromFixationDegreeAll = [gaborDistanceFromFixationDegreeAll;gaborDistanceFromFixationDegree(randSequ(trial,1))];
-        conditionAll = [conditionAll;condition];
-        WaitSecs(1);
-        
+        RespMat = [all.Block all.Trial  all.condition all.gaborDistanceFromFixationDegree all.responseVector all.dotXpos all.dotYpos all.responseTimeVector all.dotLocaRand];         
     end
 end
 
 time = clock;
 RespMat = [TrialAll  conditionAll gaborDistanceFromFixationDegreeAll responseVector subIlluDegreeAll];
 fileName = ['../data/ThresholdTest/simplified2loca/' subject_name '-' num2str(time(1)) '-' num2str(time(2)) '-' num2str(time(3)) '-' num2str(time(4)) '-' num2str(time(5)) '.mat'];
-save(fileName,'RespMat','subIlluDegree','gabor','viewingDistance','trialNumber','blockNumber');
+save(fileName);
 
-
-
-plot(subIlluDegree');
-meansubIlluDegree = mean(subIlluDegree(:,10:end),2);
-meansubIlluDegree'
-% plot(meansubIlluDegree);
 
 
 

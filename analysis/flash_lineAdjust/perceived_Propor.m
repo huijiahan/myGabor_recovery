@@ -9,7 +9,7 @@ addpath '../../function';
 
 mark = 3;
 
-sbjnames = {'lucy'}; % 'guofanhua','huijiahan','linweiru','hehuixia','lucy'
+sbjnames = {'lucy'}; % ,'guyang','linweiru2','lucy','qinxiwen'
 
 % for test flash apparent motion line adjust
 if mark == 1
@@ -59,6 +59,9 @@ for sbjnum = 1:length(sbjnames)
         Perc_prop_temp_R(delay) = 1/2 + LineDegree10dva_right_ave(delay)/(ang2radi(meanSubIlluDegree(1)));
     end
     
+    plot(intervalTimesMatSingle*1000,Perc_prop_temp_L*100);
+    plot(intervalTimesMatSingle*1000,Perc_prop_temp_R*100);
+    
     Perc_prop_L(sbjnum,:) = Perc_prop_temp_L;
     Perc_prop_norm_L = mean(Perc_prop_L,1);
     Perc_prop_R(sbjnum,:) = Perc_prop_temp_R;
@@ -78,7 +81,8 @@ for sbjnum = 1:length(sbjnames)
 %     elseif mark == 3  % one white flash
 %         color_single = 'm';
 %     end
-%     
+
+
 %     plot(intervalTimesMatSingle*1000,(Perc_prop(sbjnum,:))*100); % ,'color',color_single
 %     hold on;
     
@@ -92,44 +96,48 @@ elseif mark ~= 1
     color_error = 'b.';
 end
 
+% plot(intervalTimesMatSingle*1000,(Perc_prop_L' * 100),'-o');
+% plot(intervalTimesMatSingle*1000,(Perc_prop_R * 100),'-o');
+
 
 %%%--------------------------------------------------
 %     plot the result of leftward
 %%%--------------------------------------------------
 
-% plot(intervalTimesMatSingle*1000,(Perc_prop_norm_L * 100),'-o','color',color);
-% Perc_prop_ste_L = ste(Perc_prop_L*100,1);
-% hold on;
-% errorbar(intervalTimesMatSingle*1000,(Perc_prop_norm_L * 100),Perc_prop_ste_L,color_error);
+plot(intervalTimesMatSingle*1000,(Perc_prop_norm_L * 100),'-o','color','r');
+Perc_prop_ste_L = ste(Perc_prop_L*100,1);
+hold on;
+% errorbar(intervalTimesMatSingle*1000,(Perc_prop_norm_L * 100),Perc_prop_ste_L,color_error,'color','r');
 %%%--------------------------------------------------
 %     plot the result of leftward
 %%%--------------------------------------------------
-% plot(intervalTimesMatSingle*1000,(Perc_prop_norm_R * 100),'-o','color','b');
-% Perc_prop_ste_R = ste(Perc_prop_R*100,1);
-% hold on;
-% errorbar(intervalTimesMatSingle*1000,(Perc_prop_norm_R * 100),Perc_prop_ste_R,'b.');
+plot(intervalTimesMatSingle*1000,(Perc_prop_norm_R * 100),'-o','color','b');
+Perc_prop_ste_R = ste(Perc_prop_R*100,1);
+hold on;
+% errorbar(intervalTimesMatSingle*1000,(Perc_prop_norm_R * 100),Perc_prop_ste_R,'color','b');
 %%%--------------------------------------------------
 %     plot the result of all
 %%%--------------------------------------------------
-plot(intervalTimesMatSingle*1000,(Perc_prop_norm * 100),'-o','color','g');
-Perc_prop_ste = ste(Perc_prop*100,1);
-hold on;
-errorbar(intervalTimesMatSingle*1000,(Perc_prop_norm * 100),Perc_prop_ste,'g.');
+% plot(intervalTimesMatSingle*1000,(Perc_prop_norm * 100),'-o','color','g');
+% Perc_prop_ste = ste(Perc_prop*100,1);
+% hold on;
+% errorbar(intervalTimesMatSingle*1000,(Perc_prop_norm * 100),Perc_prop_ste,'g.');
 
 % [p,tbl,stats] = anova1(Perc_prop_L);
 
 
 
 
-title('proportion of apparent motion perceived from the end of perceived path','FontSize',20);
-axis([-10 1000 0 120]);
-xlabel('interval time between illusion and test gabor(ms)','fontSize',30);
-ylabel('proportion from perceived endpoint','FontSize',20);
-% legend('AP','control')
+title('proportion of apparent motion perceived from the end of perceived path','FontSize',15);
+axis([-10 1000 0 100]);
+xlabel('interval time between illusion and test gabor(ms)','fontSize',10);
+ylabel('proportion from perceived endpoint %','FontSize',10);
+legend('internal motion leftward','internal motion rightward','best')
 % %     legend(sbjnames,'Location','northeast')
-ax = gca;
-ax.FontSize = 20;
+% ax = gca;
+% ax.FontSize = 20;
 set(gcf,'color','w');
 set(gca,'box','off');
 %     title(sbjnames,'FontSize',40);
 % cd '../../../../analysis/flash_lineAdjust'
+saveas(figure(1),[pwd '/avdrage.png']);

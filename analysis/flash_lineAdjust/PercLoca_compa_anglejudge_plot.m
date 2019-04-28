@@ -10,8 +10,8 @@ eachPercLoc = 'n';
 
 
 % decide analysis which distance
-mark = 3;
-sbjnames = {'huijiahan','hehuixia','guofanhua','linweiru'};  % 'huijiahan','lucy','hehuixia','guofanhua','linweiru'
+mark = 1;
+sbjnames = {'linweiru'};  % 'huijiahan','lucy','hehuixia','guofanhua','linweiru'
 % for test flash apparent motion line adjust
 if mark == 1
     cd '../../data/GaborDrift/flash_lineAdjust/percLocaTest'

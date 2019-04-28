@@ -14,4 +14,5 @@ all.responseTimeVector = [];
 all.lineAngle = [];
 all.gaborDistanceFromFixationDegree = [];
 all.orientation = [];
+all.cueVerDisDegree = [];
 end

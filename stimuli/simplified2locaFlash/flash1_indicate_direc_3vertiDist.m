@@ -81,45 +81,28 @@ rightKey = KbName('RightArrow');
 % Experiment setup
 % fprintf('subject_name is',);
 
-trialNumber = 10; % have to triple times of 8 which is the number of the interval time and 9 conditions
+trialNumber = 30; % have to triple times of 8 which is the number of the interval time and 9 conditions
 blockNumber = 1;
 
 all = RespStartMatrix();
 
 % all the conditions 9
 gaborMatSingle = {'upperRight_rightward','upperRight_leftward'};
-% gaborMatSingle = {'upperLeft_rightward','lowerLeft_rightward'};
+
 % interval time between cue and gabor
 % intervalTimesMatSingle = [0 0.05 0.1 0.15 0.2 0.25 0.3 0.35];   % intervalTime second
 intervalTimesMatSingle = [0 0.25 0.5 0.75 1];
 
-% gabor location from center in angle  but fixation move left 3 degree [4 5
-% 6 7] means [7 8 9 10] dva
+% move fixation to left
 xCenter = xCenter - gabor.fixationPixel;
 yCenter = yCenter;
 
 gaborDistanceFromFixationDegree = [10];   % visual angle degree
+cueVerDisDegree = [0 1.5 3.5];
 
-% trial repeatTimes of each combined condition
-repeatTimes = trialNumber/(length(gaborMatSingle)*length(intervalTimesMatSingle)...
-    *length(gaborDistanceFromFixationDegree));
-% randomized the different conditions 4 locations 8 directions
-blockData = [];
-k = 0;
-factor1 = [1:length(gaborDistanceFromFixationDegree)]; % blockData 1
-factor2 = [1:length(gaborMatSingle)]; % blockData 2
-factor3 = [1:length(intervalTimesMatSingle)]; % blockData 3
-for i1 = 1:length(factor1)
-    for i2 = 1:length(factor2)
-        for i3 = 1:length(factor3)
-            k = k + 1;
-            pickupData(k,:) = [factor1(i1),factor2(i2),factor3(i3)];
-        end
-    end
-end
-subData = repmat(pickupData,repeatTimes,1);
-blockData = [subData(Shuffle(1:length(subData)),:)];
-% blockData = subData;
+[blockData,subData] = randCondi(gaborDistanceFromFixationDegree,gaborMatSingle,...
+    intervalTimesMatSingle,cueVerDisDegree,trialNumber);
+
 
 
 %----------------------------------------------------------------------
@@ -128,8 +111,7 @@ blockData = [subData(Shuffle(1:length(subData)),:)];
 
 time.FlashShow = 0.0167;  % 0.2
 % Make a vector to record the response for each trial
-cueVerDisDegree = 3.5;  % negtive number means higher;   positive number means lower
-cueVerDisPix = deg2pix(cueVerDisDegree,viewingDistance,screenXpixels,displaywidth);
+
 % flash dot colot of gaussian dot
 % dotColor = [0 0.1 0];
 dotSizePix = 200;
@@ -184,6 +166,11 @@ for block = 1:blockNumber
             gaborDistanceFromFixationDegreeNow = gaborDistanceFromFixationDegree(blockData(trial,1));
             gaborDistanceFromFixationPixel = deg2pix(gaborDistanceFromFixationDegreeNow,viewingDistance,screenXpixels,displaywidth);
             
+            % cueVerDisDegree = 3.5;  % negtive number means higher;   positive number means lower
+            
+            cueVerDisDegreeNow = cueVerDisDegree(blockData(trial,4));
+            cueVerDisPix = deg2pix(cueVerDisDegreeNow,viewingDistance,screenXpixels,displaywidth);
+            
             
             % set the middle of the gabor path 7 or 10 dva away from the fixation
             % so the direction of gabor is crossed in the middle of the path
@@ -210,24 +197,7 @@ for block = 1:blockNumber
                     
                 end
             end
-            % at the end of the gabor generate a green flash
-            %             if frame > (round(gabor.stimulusTime * framerate) - 1)
-            %                 dotXpos_gabor = (gaborLocation(1)+gaborLocation(3))/2;
-            %                 dotYpos_gabor = (gaborLocation(2)+gaborLocation(4))/2;
-            %
-            %                 [dstRects,flash] = gaussianDot(dotSizePix,gaussDim,dotXpos_gabor,dotYpos_gabor,grey,whitecolor);
-            %                 % Draw the dot to the screen. For information on the command used in
-            %                 % this line type "Screen DrawDots?" at the command line (without the
-            %                 % brackets) and press enter. Here we used good antialiasing to get nice
-            %                 % smooth edges
-            %                 %Screen('DrawDots', window, [dotXpos_gabor dotYpos_gabor], gabor.DimPix, dotColor, [], 2);
-            %
-            %                 % Draw the gaussian apertures  into our full screen aperture mask
-            %                 Screen('BlendFunction', window, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-            %                 masktex = Screen('MakeTexture', window, flash);
-            %                 Screen('DrawTextures', window, masktex,[],dstRects);
-            %
-            %             else
+           
             
             Screen('DrawTextures', window, gabor.tex, [], gaborLocation, orientation, [], [], [], [],...
                 kPsychDontDoRotation, gabor.propertiesMatFirst');
@@ -245,10 +215,7 @@ for block = 1:blockNumber
             Screen('Flip',window);
             
             %Screen('BlendFunction', window, GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA);
-            
-            
-            
-            %             gabor.SpeedFrame = gaborMoveSpeedPixel + gabor.SpeedFrame;
+
         end
         
         
@@ -274,9 +241,22 @@ for block = 1:blockNumber
         end
         
         if condition == 'upperRight_rightward'
-            gaborLoc.Cue_R = cueLocation;
+            if cueVerDisDegreeNow == cueVerDisDegree(1)
+                gaborLoc.Cue_R.n = cueLocation;
+            elseif cueVerDisDegreeNow == cueVerDisDegree(2)
+                gaborLoc.Cue_R.m = cueLocation;
+            elseif cueVerDisDegreeNow == cueVerDisDegree(3)
+                gaborLoc.Cue_R.f = cueLocation;
+            end
         elseif  condition == 'upperRight_leftward'
-            gaborLoc.Cue_L = cueLocation;
+            if cueVerDisDegreeNow == cueVerDisDegree(1)
+                gaborLoc.Cue_L.n = cueLocation;
+            elseif cueVerDisDegreeNow == cueVerDisDegree(2)
+                gaborLoc.Cue_L.m = cueLocation;
+            elseif cueVerDisDegreeNow == cueVerDisDegree(3)
+                gaborLoc.Cue_L.f = cueLocation;
+            end
+            %             gaborLoc.Cue_L = cueLocation;
         end
         
         %----------------------------------------------------------------------
@@ -284,8 +264,8 @@ for block = 1:blockNumber
         %----------------------------------------------------------------------
         
         % draw the green gaussian flash at the cue location
-        dotXpos_cue = (cueLocation(1) + cueLocation(3))/2;
-        dotYpos_cue = (cueLocation(2) + cueLocation(4))/2;
+        [dotXpos_cue,dotYpos_cue] = findcenter(cueLocation);
+        
         Screen('BlendFunction', window, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         
         [dstRects,flash] = gaussianDot(dotSizePix,gauss.Dim,dotXpos_cue,dotYpos_cue,grey,whitecolor,gauss.standDevia,gauss.dotFlag);
@@ -341,11 +321,13 @@ for block = 1:blockNumber
         all.condition = [all.condition;condition];
         all.gaborDistanceFromFixationDegree = [all.gaborDistanceFromFixationDegree; gaborDistanceFromFixationDegreeNow];
         all.intervalTimesVector = [all.intervalTimesVector;intervalTimes];
+        all.cueVerDisDegree = [all.cueVerDisDegree;cueVerDisDegreeNow];
         %         orientationAll = [orientationAll;orientation];
         % trial interval 0.8s
         WaitSecs(0.8);
         
-        RespMat = [all.Block all.Trial  all.condition all.intervalTimesVector all.gaborDistanceFromFixationDegree all.responseVector all.lineAngle all.responseTimeVector];
+        %     end
+        RespMat = [all.Block all.Trial  all.condition all.intervalTimesVector all.gaborDistanceFromFixationDegree all.cueVerDisDegree all.responseVector all.lineAngle all.responseTimeVector];
         
     end
     %----------------------------------------------------------------------
@@ -366,7 +348,7 @@ end
 %----------------------------------------------------------------------
 time = clock;
 % RespMat = [BlockAll TrialAll  conditionAll intervalTimesVector  responseVector];
-fileName = ['../../data/GaborDrift/simplified2loca/3.5dva_indicate_direc/' subject_name '-' num2str(time(1)) '-' num2str(time(2)) '-' num2str(time(3)) '-' num2str(time(4)) '-' num2str(time(5)) '.mat'];
+fileName = ['../../data/GaborDrift/simplified2loca/flash1_direc_3vertiDist/' subject_name '-' num2str(time(1)) '-' num2str(time(2)) '-' num2str(time(3)) '-' num2str(time(4)) '-' num2str(time(5)) '.mat'];
 save(fileName);%,'RespMat','subIlluDegree','intervalTimesVector','cueVerDisDegree','gabor','viewingDistance','trialNumber','blockNumber');
 
 
