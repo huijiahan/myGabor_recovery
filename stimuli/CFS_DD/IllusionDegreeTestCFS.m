@@ -18,7 +18,7 @@ PsychDefaultSetup(2);
 % oldEnableFlag=Screen('Preference', 'EmulateOldPTB', [1]);
 HideCursor;
 commandwindow;
-addpath '../function';
+addpath '../../function';
 
 %     Screen('Prefere nce','VisualDebugLevel',0); % warning triangle
 
@@ -158,26 +158,26 @@ load /Users/jia/Documents/matlab/DD_illusion/myGabor/function/CFS/CFSMatMovie.ma
 % CFSFrequency= 8;
 CFSMatMovie=Shuffle(CFSMatMovie);
 CFSFrames = 100;
-CFScont = 1;
+% CFScont = 1;
 
 
 % load CFS images and Make Textures
-CFSsize_scale = 0.25;
-xsize = 256;
-ysize = 256;
-[x2,y2] = meshgrid(-xsize/2:xsize/2-1,-ysize/2:ysize/2-1); % make a axis
-r2 = sqrt(x2.^2+y2.^2);
+% CFSsize_scale = 0.5;
+% xsize = 256;
+% ysize = 256;
+% [x2,y2] = meshgrid(-xsize/2:xsize/2-1,-ysize/2:ysize/2-1); % make a axis
+% r2 = sqrt(x2.^2+y2.^2);
 % pict = 256*rand(ysize,xsize,3);
-mask2 = r2<xsize/2.*CFSsize_scale;
+% mask2 = r2<xsize/2.*CFSsize_scale;
 
 % pict(:,:,4) = mask2;
 % pict(:,:,4) = uint8(pict(:,:,4)*255);
 for i=1:CFSFrames
-    CFSMatMovie{i} =CFScont*(CFSMatMovie{i}-128)+128;
+    %     CFSMatMovie{i} =CFScont*(CFSMatMovie{i}-128)+128;
     CFSImage=CFSMatMovie{i};  %.*mask+ContraN;
-    CFSImage(:,:,4)=mask2*255;
+    %     CFSImage(:,:,4)=mask2*255;
     
-    CFSImage = CFSImage((256/2-128*CFSsize_scale):(256/2+128*CFSsize_scale),(256/2-128*CFSsize_scale):(256/2+128*CFSsize_scale),:);
+    %     CFSImage = CFSImage((256/2-128*CFSsize_scale):(256/2+128*CFSsize_scale),(256/2-128*CFSsize_scale):(256/2+128*CFSsize_scale),:);
     CFSTex(i)=Screen('MakeTexture',window,CFSImage);
 end
 
@@ -193,6 +193,9 @@ for block = 1: blockNumber
         % If this is the first trial we present a start screen and wait for a
         % key-press
         if trial == 1
+            Screen('SelectStereoDrawBuffer', window, 0);
+            DrawFormattedText(window, 'Press Any Key To Begin', 'center', 'center', black);
+            Screen('SelectStereoDrawBuffer', window, 1);
             DrawFormattedText(window, 'Press Any Key To Begin', 'center', 'center', black);
             Screen('Flip', window);
             KbStrokeWait;
@@ -212,7 +215,7 @@ for block = 1: blockNumber
         
         yframe = [1:gabor.SpeedFrame*cos(subIlluDegree*pi/360):500];
         xframe =  yframe * tan(subIlluDegree*pi/360);
-
+        
         
         for frame = 1: (gabor.stimulusTime * framerate)
             
@@ -264,11 +267,11 @@ for block = 1: blockNumber
             if condition == 'upperRight_rightward'
                 gaborLoc.End_R = gaborLocation;
                 [dotXpos_R_end,dotYpos_R_end] = findcenter(gaborLoc.End_R);
-                CFSloca_R = [dotXpos_R_st  dotYpos_R_st dotXpos_R_end  dotYpos_R_end];
+                CFSloca_R = [dotXpos_R_end  dotYpos_R_end dotXpos_R_st  dotYpos_R_st];
             elseif  condition == 'upperRight_leftward'
                 gaborLoc.End_L = gaborLocation;
                 [dotXpos_L_end,dotYpos_L_end] = findcenter(gaborLoc.End_L);
-                CFSloca_L = [dotXpos_L_st   dotYpos_L_st   dotXpos_L_end    dotYpos_L_end];
+                CFSloca_L = [dotXpos_L_end    dotYpos_L_end   dotXpos_L_st   dotYpos_L_st];
             end
             
             %             if condition == 'upperRight_rightward'
@@ -294,9 +297,9 @@ for block = 1: blockNumber
             Screen('DrawDots', window,[xCenter, yCenter], 10, [255 255 255 255], [], 2);
             %             Screen('DrawTexture',window,backTex);
             if condition == 'upperRight_rightward'
-                Screen('DrawTexture',window,CFSTex(w),[]); % CFSloca_R
+                Screen('DrawTexture',window,CFSTex(w),[],CFSloca_R); % CFSloca_R
             elseif  condition == 'upperRight_leftward'
-                Screen('DrawTexture',window,CFSTex(w),[]); % ,CFSloca_L
+                Screen('DrawTexture',window,CFSTex(w),[],CFSloca_L); % ,CFSloca_L   [154.4633  543.7759  204.4633  593.7759]
             end
             
             
@@ -315,7 +318,7 @@ for block = 1: blockNumber
         %         Screen('DrawDots', window,[xCenter,  yCenter], 10, [255 255 255 255], [], 2);
         Screen('Flip',window);
         WaitSecs(gauss.testDotDelay);
-   
+        
         %----------------------------------------------------------------------
         %%%                         adjustable dot setting
         %----------------------------------------------------------------------
@@ -324,31 +327,34 @@ for block = 1: blockNumber
         % The left arrow key signals a "left" response and the right arrow key
         % a "right" response. You can also press escape if you want to exit the
         % program
-        if condition == 'upperRight_rightward' 
-           gaborEndLocation_R = gaborLocation;
+        if condition == 'upperRight_rightward'
+            gaborEndLocation_R = gaborLocation;
         elseif  condition == 'upperRight_leftward'
-            gaborEndLocation_L = gaborLocation;       
+            gaborEndLocation_L = gaborLocation;
         end
         
         t1 = GetSecs;
         respToBeMade = true;
         
-        % set 3 conditions of perceived location test dot        
+        % set 3 conditions of perceived location test dot
         gaborLocationPhy = gaborLocation;
         gaborLocationPerc = CenterRectOnPointd(gabor.rect, xCenter  + gaborfixationFactor * gaborDistanceFromFixationPixel + gaborStartLocMoveXFactor * gaborStartLocMoveXPixel  ...
-                - xframeFactor * xframe(frame), yCenter +  gaborStartLocMoveYFactor * gaborStartLocMoveYPixel + yframeFactor * yframe(frame));        
+            - xframeFactor * xframe(frame), yCenter +  gaborStartLocMoveYFactor * gaborStartLocMoveYPixel + yframeFactor * yframe(frame));
         gaborEndLocaMid = CenterRectOnPointd(gabor.rect, xCenter  + gaborfixationFactor * gaborDistanceFromFixationPixel + gaborStartLocMoveXFactor * gaborStartLocMoveXPixel  ...
-           , yCenter +  gaborStartLocMoveYFactor * gaborStartLocMoveYPixel + yframeFactor * yframe(frame));
-
+            , yCenter +  gaborStartLocMoveYFactor * gaborStartLocMoveYPixel + yframeFactor * yframe(frame));
+        
         dotLoca = [gaborLocationPhy; gaborEndLocaMid; gaborLocationPerc];
         
-             
+        
         [dotXpos,dotYpos] = findcenter(dotLoca(dotLocaRand(trial),:));
         
-              
-        moveStep = 1;        
+        
+        moveStep = 1;
         while respToBeMade
-            
+            Screen('SelectStereoDrawBuffer', window, 0);
+            %             Screen('Flip',window);
+            Screen('DrawDots', window,[xCenter,   yCenter], 10, whiteColor, [], 2);
+            Screen('SelectStereoDrawBuffer', window, 1);
             %             Screen('Flip',window);
             Screen('DrawDots', window,[xCenter,   yCenter], 10, whiteColor, [], 2);
             
@@ -363,48 +369,52 @@ for block = 1: blockNumber
             Screen('Flip',window);
             
             
-                % the gauss dot could move either horizontally or vertically
-                [keyIsDown,secs,keyCode] = KbCheck;
-                if keyCode(escapeKey)
-                    ShowCursor;
-                    sca;
-                    return
-                elseif keyCode(leftKey)
-                    response = 1;
-                    dotXpos = dotXpos - moveStep;
-                    dotYpos = dotYpos;
-                elseif keyCode(rightKey)
-                    response = 2;
-                    dotXpos = dotXpos + moveStep;
-                    dotYpos = dotYpos;
-                elseif keyCode(upKey)
-                    response = 3;
-                    dotXpos = dotXpos;
-                    dotYpos = dotYpos - moveStep;
-                elseif keyCode(downKey)
-                    response = 4;
-                    dotXpos = dotXpos;
-                    dotYpos = dotYpos + moveStep;
-                elseif keyCode(spaceKey)
-                    response = NaN;
-                    dotXpos = dotXpos;
-                    dotYpos = dotYpos;
-                    respToBeMade = false;
-                end
-%             end
-           
+            % the gauss dot could move either horizontally or vertically
+            [keyIsDown,secs,keyCode] = KbCheck;
+            if keyCode(escapeKey)
+                ShowCursor;
+                sca;
+                return
+            elseif keyCode(leftKey)
+                response = 1;
+                dotXpos = dotXpos - moveStep;
+                dotYpos = dotYpos;
+            elseif keyCode(rightKey)
+                response = 2;
+                dotXpos = dotXpos + moveStep;
+                dotYpos = dotYpos;
+            elseif keyCode(upKey)
+                response = 3;
+                dotXpos = dotXpos;
+                dotYpos = dotYpos - moveStep;
+            elseif keyCode(downKey)
+                response = 4;
+                dotXpos = dotXpos;
+                dotYpos = dotYpos + moveStep;
+            elseif keyCode(spaceKey)
+                response = NaN;
+                dotXpos = dotXpos;
+                dotYpos = dotYpos;
+                respToBeMade = false;
+            end
+            %             end
+            
             
         end
         
         Screen('BlendFunction', window, GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA);
+        Screen('SelectStereoDrawBuffer', window, 0);
         Screen('DrawDots', window,[xCenter,   yCenter], 10, [255 255 255 255], [], 2);
+        Screen('SelectStereoDrawBuffer', window, 1);
+        Screen('DrawDots', window,[xCenter,   yCenter], 10, [255 255 255 255], [], 2);
+        
         Screen('Flip',window);
-%         WaitSecs(gauss.testDotDelay);
+        %         WaitSecs(gauss.testDotDelay);
         t2 = GetSecs;
         %         Record the response
         responseTime = t2-t1;
         all.dotLocaRand = [all.dotLocaRand;dotLocaRand(trial)];
-       
+        
         all.dotXpos = [all.dotXpos;dotXpos];
         all.dotYpos = [all.dotYpos;dotYpos];
         all.responseTimeVector = [all.responseTimeVector;responseTime];
@@ -416,6 +426,7 @@ for block = 1: blockNumber
         all.gaborDistanceFromFixationDegree = [all.gaborDistanceFromFixationDegree; gaborDistanceFromFixationDegreeNow];
         %         all.intervalTimesVector = [all.intervalTimesVector;intervalTimes];
         all.orientation = [all.orientation;orientation];
+        
         WaitSecs(0.8);
         
         %----------------------------------------------------------------------
@@ -423,7 +434,7 @@ for block = 1: blockNumber
         %----------------------------------------------------------------------
         
         
-        RespMat = [all.Block all.Trial  all.condition all.gaborDistanceFromFixationDegree all.responseVector all.dotXpos all.dotYpos all.responseTimeVector all.dotLocaRand];         
+        RespMat = [all.Block all.Trial  all.condition all.gaborDistanceFromFixationDegree all.responseVector all.dotXpos all.dotYpos all.responseTimeVector all.dotLocaRand];
     end
 end
 

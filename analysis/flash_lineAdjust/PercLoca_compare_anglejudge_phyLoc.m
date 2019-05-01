@@ -8,9 +8,9 @@ addpath '../../function';
 % eachPercLoc = input('>>>> show each perceived location? (e.g.: n or y):  ','s');
 eachPercLoc = 'y';
 % showwardmark = input('>>>> show rightward leftward or both? (e.g.: r or l or b):  ','s');
-showwardmark = 'r';
+showwardmark = 'b';
 % decide analysis which distance
-mark = 4;
+mark = 1;
 sbjnames = {'guyang'};  % 'huijiahan','lucy','hehuixia','guofanhua','linweiru' huijiahan-2019-4-22-9-59
 % for test flash apparent motion line adjust
 if mark == 1

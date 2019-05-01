@@ -7,9 +7,9 @@ addpath '../../function';
 mark = 1;
 
 if mark == 1
-    cd '../../data/GaborDrift/simplified2loca/3.5dva_indicate_direc'
+    cd '../../data/GaborDrift/simplified2loca/flash1_direc_3vertiDist'
     % 0.5 dva
-    sbjnames = {'huijiahan'};
+    sbjnames = {'k'};
 elseif mark ~= 1
     % 1.5 dva
     cd '../data/GaborDrift/illusionDegreeSpec/1.5dva'
@@ -20,6 +20,7 @@ gaborMatSingle = {'upperRight_rightward','upperRight_leftward'};
 %     intervalTimesMatSingle = [0 0.05 0.1 0.15 0.2 0.25 0.3 0.35];% [0 50 100 150 200 250 300 350]* 0.001;
 intervalTimesMatSingle = [0 0.25 0.5 0.75 1];
 gaborDistanceFromFixationDegree = [10];
+cueVerDisDegree = [0 1.5 3.5];
 %     Resp7dva = zeros(8,1);
 [Resp_L,Resp_R]  = deal(zeros(length(intervalTimesMatSingle),1));
 

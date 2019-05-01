@@ -5,6 +5,7 @@ function [blockData,subData]=randCondi(gaborDistanceFromFixationDegree,gaborMatS
     intervalTimesMatSingle,cueVerDisDegree,trialNumber);
 
 
+
 k = 0;
 
 % trial repeatTimes of each combined condition

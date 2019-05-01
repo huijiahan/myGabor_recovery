@@ -1,15 +1,15 @@
 % RespMat to Line angle ave have to be the data from which response is
 % adjustable line
 
-function  [LineAngle_ave,LineDegree10dva_right_ave,LineDegree10dva_left_ave] = RespMat2LineAngle_ave(RespMat,intervalTimesMatSingle,...
+function  [LineAngle_ave,LineDegree10dva_right_ave,LineDegree10dva_left_ave] = RespMat2LineAngle_ave_forDelay(RespMat,intervalTimesMatSingle,...
     gaborDistanceFromFixationDegree)
 
 
 
 LineDegree10dva_left = zeros(8,1);
 LineDegree10dva_right = zeros(8,1);
-LineDegree7dva_left = zeros(8,1);
-LineDegree7dva_right = zeros(8,1);
+% LineDegree7dva_left = zeros(8,1);
+% LineDegree7dva_right = zeros(8,1);
 
 lineAngleColumn = 7;
 

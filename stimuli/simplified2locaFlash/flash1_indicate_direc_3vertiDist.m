@@ -81,8 +81,8 @@ rightKey = KbName('RightArrow');
 % Experiment setup
 % fprintf('subject_name is',);
 
-trialNumber = 30; % have to triple times of 8 which is the number of the interval time and 9 conditions
-blockNumber = 1;
+trialNumber = 60; % have to triple times of 8 which is the number of the interval time and 9 conditions
+blockNumber = 6;
 
 all = RespStartMatrix();
 
