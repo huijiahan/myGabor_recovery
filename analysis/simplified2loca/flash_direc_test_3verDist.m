@@ -9,7 +9,7 @@ mark = 1;
 if mark == 1
     cd '../../data/GaborDrift/simplified2loca/flash1_direc_3vertiDist'
     % 0.5 dva
-    sbjnames = {'k'};
+    sbjnames = {'qinxiwen'};
 elseif mark ~= 1
     % 1.5 dva
     cd '../data/GaborDrift/illusionDegreeSpec/1.5dva'
@@ -33,25 +33,45 @@ for sbjnum = 1:length(sbjnames)
     
     % left 1   right 0
     % record the apparent motion from real path
+%     [dotYpos_R_Mat_Phy,dotYpos_R_Mat_Mid,dotYpos_R_Mat_Perc] = deal([]);
+    [Resp_L_near, Resp_L_mid,Resp_L_far,Resp_R_near,Resp_R_mid,Resp_R_far] = deal(zeros(1,length(intervalTimesMatSingle)));
     
     
     for i = 1 : length(RespMat)
+        
         for delay = 1:length(intervalTimesMatSingle)
             if  str2double(RespMat(i,4)) == intervalTimesMatSingle(delay)
+                conditionResp = str2num(RespMat(i,7));
                 switch RespMat(i,3)
                     % response left 1   right 0
                     % record the apparent motion from perceived endpoint
                     case 'upperRight_leftward'
-                        % RespMat(i,6) == 0 direction right  from perceived endpoint
-                        % RespMat(i,6) == 1 direction left  from physical endpoint
-                        if  str2double(RespMat(i,6)) == 0
-                            Resp_L(delay) = Resp_L(delay) + 1;
+                        % RespMat(i,7) == 0 direction right  from perceived endpoint
+                        % RespMat(i,7) == 1 direction left  from physical endpoint
+                        if conditionResp == 1
+                            if  str2double(RespMat(i,6)) == 0
+                                Resp_L_near(delay) = Resp_L_near(delay) + 1;
+                            end
+                            if  str2double(RespMat(i,6)) == 1.5
+                                Resp_L_mid(delay) = Resp_L_mid(delay) + 1;
+                            end
+                            if  str2double(RespMat(i,6)) == 3.5
+                                Resp_L_far(delay) = Resp_L_far(delay) + 1;
+                            end
                         end
                     case 'upperRight_rightward'
                         % RespMat(i,6) == 0 direction right  from physical endpoint
                         % RespMat(i,6) == 1 direction left  from perceived endpoint
-                        if  str2double(RespMat(i,6)) == 1
-                            Resp_R(delay) = Resp_R(delay) + 1;
+                        if conditionResp == 0
+                            if  str2double(RespMat(i,6)) == 0
+                                Resp_R_near(delay) = Resp_R_near(delay) + 1;
+                            end
+                            if  str2double(RespMat(i,6)) == 1.5
+                                Resp_R_mid(delay) = Resp_R_mid(delay) + 1;
+                            end
+                            if  str2double(RespMat(i,6)) == 3.5
+                                Resp_R_far(delay) = Resp_R_far(delay) + 1;
+                            end
                         end
                 end
             end
@@ -64,8 +84,9 @@ end
 
 trialNumPerCondition = length(RespMat)/(length(intervalTimesMatSingle)*length(gaborDistanceFromFixationDegree))/2;
 % Resp7dvaPerc = Resp7dva/trialNumPerCondition;
-Resp_L_Perc = Resp_L/trialNumPerCondition;
-Resp_R_Perc = Resp_R/trialNumPerCondition;
+
+Resp_L_Perc = Resp_L_mid/trialNumPerCondition;
+Resp_R_Perc = Resp_R_mid/trialNumPerCondition;
 
 % plot(intervalTimesMatSingle*1000,Resp7dvaPerc*100);
 % hold on;

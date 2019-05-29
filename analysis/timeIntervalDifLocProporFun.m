@@ -24,15 +24,15 @@ for sbjnum = 1:length(sbjnames)
     load (Files.name);
     gaborMatSingle = {'upperRight_rightward','upperRight_leftward','upperLeft_rightward','upperLeft_leftward',...
         'lowerRight_rightward' ,'lowerRight_leftward','lowerLeft_rightward','lowerLeft_leftward','catch_trial'};
-    intervalTimesMatSingle = [0 50 100 150 200 250 300 350]* 0.001;
-    
+%     intervalTimesMatSingle = [0 50 100 150 200 250 300 350]* 0.001;
+    intervalTimesMatSingle = [0 0.05 0.1 0.15 0.2 0.25 0.3 0.35];
     
     [proporPerc(sbjnum,:),meanReactionTime(sbjnum),performance(sbjnum)] = RespMat2propor(RespMat,gaborMatSingle,intervalTimesMatSingle);
     
     plot(intervalTimesMatSingle*1000,proporPerc(sbjnum,:)*100);
     hold on;
 end
-performance
+performance;
 % hold on;
 % 
 % plot(intervalTimesMatSingle*1000,proporPerc*100);

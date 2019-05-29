@@ -89,7 +89,7 @@ gaborMatSingle = {'upperRight_rightward','upperRight_leftward'};
 % gaborMatSingle = {'lowerLeft_rightward'};
 intervalTimesMatSingle = [0 0.25 0.5 1];    % intervalTime second
 gaborDistanceFromFixationDegree = [10];   % visual angle degree
-barDisFromGaborStartDeg = [-0.2 0 0.2];
+barDisFromGaborStartDeg = [-0.2 0 0.];
 % gabor location from center in angle  but fixation move left 3 degree
 xCenter = xCenter - gabor.fixationPixel;
 yCenter = yCenter;
@@ -225,9 +225,8 @@ for block = 1: blockNumber
             
             % set the middle of the gabor path 7 or 10 dva away from the fixation
             % so the direction of gabor is crossed in the middle of the path
-
-            gaborStartLocMoveXDegree = gabor.pathLengthDegree/2 * sin((subIlluDegree/360)*pi); % (gabor.pathLengthDegree/2)* sin((subIlluDegree/360)*pi);
-            gaborStartLocMoveYDegree = gabor.pathLengthDegree/2 * cos((subIlluDegree/360)*pi); % gabor.pathLengthDegree/2 * cos((subIlluDegree/360)*pi);
+            gaborStartLocMoveXDegree = 0; % (gabor.pathLengthDegree/2)* sin((subIlluDegree/360)*pi);
+            gaborStartLocMoveYDegree = 0; % gabor.pathLengthDegree/2 * cos((subIlluDegree/360)*pi);
             gaborStartLocMoveXPixel = deg2pix(gaborStartLocMoveXDegree,viewingDistance,screenXpixels,displaywidth);
             gaborStartLocMoveYPixel = deg2pix(gaborStartLocMoveYDegree,viewingDistance,screenXpixels,displaywidth);
             
@@ -264,15 +263,15 @@ for block = 1: blockNumber
             %----------------------------------------------------------------------
             %                       save the gabor end location
             %----------------------------------------------------------------------
-            frameCFS = round(gabor.stimulusTime * framerate);
-                gaborLocationaCFS = CenterRectOnPointd(gabor.rect, xCenter  + gaborfixationFactor * gaborDistanceFromFixationPixel + gaborStartLocMoveXFactor * gaborStartLocMoveXPixel  ...
-                + xframeFactor * xframe(frameCFS), yCenter +  gaborStartLocMoveYFactor * gaborStartLocMoveYPixel + yframeFactor * yframe(frameCFS));
+            frame1 = round(gabor.stimulusTime * framerate);
+                gaborLocation1 = CenterRectOnPointd(gabor.rect, xCenter  + gaborfixationFactor * gaborDistanceFromFixationPixel + gaborStartLocMoveXFactor * gaborStartLocMoveXPixel  ...
+                + xframeFactor * xframe(frame1), yCenter +  gaborStartLocMoveYFactor * gaborStartLocMoveYPixel + yframeFactor * yframe(frame1));
             if condition == 'upperRight_rightward'             
-                gaborLoc.End_R = gaborLocationaCFS;
+                gaborLoc.End_R = gaborLocation1;
                 [dotXpos_R_end,dotYpos_R_end] = findcenter(gaborLoc.End_R);
                 CFSloca_R = [dotXpos_R_end  dotYpos_R_end dotXpos_R_st  dotYpos_R_st];
             elseif  condition == 'upperRight_leftward'
-                gaborLoc.End_L = gaborLocationaCFS;
+                gaborLoc.End_L = gaborLocation1;
                 [dotXpos_L_end,dotYpos_L_end] = findcenter(gaborLoc.End_L);
                 CFSloca_L = [dotXpos_L_end    dotYpos_L_end   dotXpos_L_st   dotYpos_L_st];
             end

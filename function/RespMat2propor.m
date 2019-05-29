@@ -35,7 +35,7 @@ if   ~ exist('gaborMatSingle','var') || isempty(gaborMatSingle)
         'lowerRight_rightward' ,'lowerRight_leftward','lowerLeft_rightward','lowerLeft_leftward'};
 end
 if ~ exist('intervalTimesMatSingle','var') || isempty(intervalTimesMatSingle)  
-    intervalTimesMatSingle = [0 50 100 150 200 250 300 350]* 0.001;
+    intervalTimesMatSingle = [0 0.05 0.1 0.15 0.2 0.25 0.3 0.35];
 end
     trialNumPerCondition = length(RespMat)/length(gaborMatSingle);
     % catch trial performance initial number
@@ -44,12 +44,12 @@ end
     for i = 1: numel(intervalTimesMatSingle)
         
         % timeIndex  find the different interval time in the matrix and make an
-        % index   column 1 mean 0 ms column 2 means 50 ms and so on
-        if i == 8;
-            timeIndex(:,i) = find(str2double(RespMat(:,4)) == 0.35);
-        else
+        % index   column 1 mean 0 ms    column 2 means 50 ms and so on
+%         if i == 8;
+%             timeIndex(:,i) = find(str2double(RespMat(:,4)) == 0.35);
+%         else
             timeIndex(:,i) = find(str2double(RespMat(:,4)) == intervalTimesMatSingle(i));
-        end
+%         end
         
 
         

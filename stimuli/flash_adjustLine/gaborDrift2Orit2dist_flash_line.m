@@ -40,7 +40,7 @@ grey = whitecolor / 2;
 
 
 % set the window size
-winSize = [];   %[0 0 1024 768];
+winSize = [0 0 1024 768];   %[0 0 1024 768];
 
 
 %----------------------------------------------------------------------
@@ -85,7 +85,7 @@ spaceKey = KbName('space');
 % Experiment setup
 % fprintf('subject_name is',);
 
-trialNumber = 36; % have to triple times of 8 which is the number of the interval time and 9 conditions
+trialNumber = 48; % have to triple times of 8 which is the number of the interval time and 9 conditions
 blockNumber = 6;
 % Response start matrix setting
 all = RespStartMatrix();
@@ -94,7 +94,7 @@ all = RespStartMatrix();
 gaborMatSingle = {'upperRight_rightward','upperRight_leftward'};
 % gaborMatSingle = {'upperLeft_rightward','lowerLeft_rightward'};
 % interval time between cue and gabor
-intervalTimesMatSingle = [0 0.2 0.4 0.6 0.8 1];   % intervalTime second
+intervalTimesMatSingle = [0 0.05 0.1 0.15 0.2 0.25 0.3 0.35];   % intervalTime second   
 
 
 % gabor location from center in angle  but fixation move left 3 degree [4 5
@@ -105,24 +105,10 @@ yCenter = yCenter;
 gaborDistanceFromFixationDegree = [10];   % visual angle degree
 
 
-% trial repeatTimes of each combined condition
-repeatTimes = trialNumber/(length(gaborMatSingle)*length(intervalTimesMatSingle)...
-    *length(gaborDistanceFromFixationDegree));
-% randomized the different conditions 4 locations 8 directions
-blockData = [];
-k = 0;
-factor1 = [1:length(gaborDistanceFromFixationDegree)]; % blockData 1
-factor2 = [1:length(gaborMatSingle)]; % blockData 2
-factor3 = [1:length(intervalTimesMatSingle)]; % blockData 3
-for i1 = 1:length(factor1)
-    for i2 = 1:length(factor2)
-        for i3 = 1:length(factor3)
-            k = k + 1;
-            pickupData(k,:) = [factor1(i1),factor2(i2),factor3(i3)];
-        end
-    end
-end
-subData = repmat(pickupData,repeatTimes,1);
+cueVerDisDegree = 3.5;
+
+[blockData,subData]=randCondi(gaborDistanceFromFixationDegree,gaborMatSingle,...
+    intervalTimesMatSingle,cueVerDisDegree,trialNumber);
 
 if debug == 'n'  % debug 1  no
     blockData = [subData(Shuffle(1:length(subData)),:)];
@@ -213,7 +199,7 @@ for block = 1:blockNumber
             
             if frame == 1
                 if condition == 'upperRight_rightward'
-                    gaborLoc.Star_R = gaborLocation;
+                    gaborLoc.Start_R = gaborLocation;
                     
                 elseif  condition == 'upperRight_leftward'
                     gaborLoc.Start_L = gaborLocation;
@@ -400,9 +386,9 @@ toc;
 %----------------------------------------------------------------------
 time = clock;
 % RespMat = [BlockAll TrialAll  conditionAll intervalTimesVector  responseVector];
-fileName = ['../../data/GaborDrift/flash_lineAdjust/' subject_name '-' num2str(time(1)) '-' num2str(time(2)) '-' num2str(time(3)) '-' num2str(time(4)) '-' num2str(time(5)) '.mat'];
+fileName = ['../../data/GaborDrift/flash_lineAdjust/main_AP/added_gabor_location/' subject_name '-' num2str(time(1)) '-' num2str(time(2)) '-' num2str(time(3)) '-' num2str(time(4)) '-' num2str(time(5)) '.mat'];
 save(fileName);
-
+% end
 
 %----------------------------------------------------------------------
 %                       clear screen
