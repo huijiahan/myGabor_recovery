@@ -149,7 +149,7 @@ WaitSecs(preparing_time);
 % trial_number = 20;
 % exp_locations{1} = [3 2;3 2;3 2;3 4;3 4;3 4]; %[6 7; 6 8; 6 9; 6 10; 6 11; 6 12; 6 13; 6 14; 6 15; 6 16; 6 17; 6 18];
 % exp_locations{2} =  fliplr(exp_locations{1}); % matrix reverse
-load /Users/jia/Documents/matlab/DD_illusion/myGabor/function/CFS/CFSMatMovie.mat
+load /Users/jia/Documents/matlab/DD_illusion/myGabor/function/CFS/CFSMatMovie1.mat
 CFSFrequency= 8;
 CFSMatMovie=Shuffle(CFSMatMovie);
 CFSFrames = 100;
@@ -165,21 +165,21 @@ CFScont = 1;
 % pict(:,:,4) = uint8(pict(:,:,4)*255);
 % load CFS images and Make Textures
 CFSsize_scale = 0.25;
-xsize = 256;
-ysize = 256;
-[x2,y2] = meshgrid(-xsize/2:xsize/2-1,-ysize/2:ysize/2-1); % make a axis
-r2 = sqrt(x2.^2+y2.^2);
-% pict = 256*rand(ysize,xsize,3);
-mask2 = r2<xsize/2.*CFSsize_scale;
+% xsize = 256;
+% ysize = 256;
+% [x2,y2] = meshgrid(-xsize/2:xsize/2-1,-ysize/2:ysize/2-1); % make a axis
+% r2 = sqrt(x2.^2+y2.^2);
+% % pict = 256*rand(ysize,xsize,3);
+% mask2 = r2<xsize/2.*CFSsize_scale;
 
 % pict(:,:,4) = mask2;
 % pict(:,:,4) = uint8(pict(:,:,4)*255);
 for i=1:CFSFrames
-    CFSMatMovie{i} =CFScont*(CFSMatMovie{i}-128)+128;
+%     CFSMatMovie{i} =CFScont*(CFSMatMovie{i}-128)+128;
     CFSImage=CFSMatMovie{i};  %.*mask+ContraN;
-    CFSImage(:,:,4)=mask2*255;
+%     CFSImage(:,:,4)=mask2*255;
     
-    CFSImage = CFSImage((256/2-128*CFSsize_scale):(256/2+128*CFSsize_scale),(256/2-128*CFSsize_scale):(256/2+128*CFSsize_scale),:);
+%     CFSImage = CFSImage((256/2-128*CFSsize_scale):(256/2+128*CFSsize_scale),(256/2-128*CFSsize_scale):(256/2+128*CFSsize_scale),:);
     CFSTex(i)=Screen('MakeTexture',wPtr,CFSImage);
 end
 

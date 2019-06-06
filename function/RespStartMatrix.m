@@ -15,4 +15,6 @@ all.lineAngle = [];
 all.gaborDistanceFromFixationDegree = [];
 all.orientation = [];
 all.cueVerDisDegree = [];
+all.eye = [];
+all.barDisFromGaborStartDeg = [];
 end
