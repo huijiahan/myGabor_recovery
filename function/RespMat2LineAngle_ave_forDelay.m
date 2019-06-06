@@ -27,7 +27,7 @@ for i = 1 : length(RespMat)
                     % record the apparent motion from perceived path
                     % leftward perceived end  lingAngle is < 0
                     case 'upperRight_leftward'
-                        LineDegree7dva_left(delay1) = LineDegree7dva_left(delay1) + str2double(RespMat(i,lineAngleColumn));
+                        LineDegree7dva_left(delay1) = LineDegree7dva_left(delay1) + str2double(RespMat(i,7));
                         % rightward perceived end  lingAngle is > 0
                     case 'upperRight_rightward'
                         LineDegree7dva_right(delay1) = LineDegree7dva_right(delay1) + str2double(RespMat(i,lineAngleColumn));

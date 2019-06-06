@@ -81,8 +81,8 @@ spaceKey = KbName('space');
 %----------------------------------------------------------------------
 
 % Experiment setup
-trialNumber = 4; % have to be divided by  8
-blockNumber = 1;
+trialNumber = 40; % have to be divided by  8
+blockNumber = 6;
 
 all = RespStartMatrix();
 
@@ -92,7 +92,7 @@ gaborMatSingle = {'upperRight_rightward','upperRight_leftward'};
 % gaborMatSingle = {'lowerLeft_rightward'};
 % intervalTimesMatSingle = [0 0.25 0.5 1];    % intervalTime second
 gaborDistanceFromFixationDegree = [10];   % visual angle degree
-barDisFromGaborStartDeg = [0];
+barDisFromGaborStartDeg = [-1 0 1];
 eyeCFS = [0 1];  %0 mean left eye 
 % gabor location from center in angle  but fixation move left 3 degree
 xCenter = xCenter - gabor.fixationPixel;
@@ -412,11 +412,11 @@ for block = 1: blockNumber
                 return
                 % the bar was on the left of the gabor 
             elseif keyCode(leftKey)
-                response = 0;   %  origin 1
+                response = 0;
                 respToBeMade = false;
                 % the bar was on the right of gabor
             elseif keyCode(rightKey)
-                response = 1; % origin 2
+                response = ;
                 respToBeMade = false;
                 % the bar was seen during the mondrian
             elseif keyCode(spaceKey)
