@@ -21,7 +21,7 @@ elseif mark == 2
     %     sbjnames = {'guofanhua','huijiahan','lucy','hehuixia','linweiru'};
     % for test gabor line adjust
 elseif mark == 3
-    cd '../../data/GaborDrift/flash_lineAdjust/onewhiteflash_lineAdjust'
+    cd '../../data/GaborDrift/flash_lineAdjust/onewhiteflash_lineAdjust_1000ms'
     %     sbjnames = {'lucy'}; % 'linweiru','guofanhua','wangzetong','huijiahan664'，'sunliwei'
     
 end

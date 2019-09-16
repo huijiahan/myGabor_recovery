@@ -1,3 +1,4 @@
+% 8 locations illusion size
 % put the condition in and out put the parameters to set up the gabor
 % trajoctory and rotation direction
 

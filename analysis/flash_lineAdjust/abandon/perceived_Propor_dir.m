@@ -54,7 +54,7 @@ for k = 1 : numberOfFolders
         gaborDistanceFromFixationDegree = [10];
         
         
-        [LineAngle_ave] = RespMat2LineAngle_ave(RespMat,intervalTimesMatSingle,gaborDistanceFromFixationDegree);
+        [LineAngle_ave] = RespMat2LineAngle_ave_forDelay(RespMat,intervalTimesMatSingle,gaborDistanceFromFixationDegree);
         
         
         

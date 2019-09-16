@@ -5,9 +5,21 @@
 
 clearvars;
 sca;
-name = input('>>>> Participant name (e.g.: AB):  ','s');
-% name = 'k';
+expmark = input('>>>> which exp (e.g.: 1/2/3/4):  ');
+% 1 CFS main exp BR  2 control nointernal motion BR  3 control binocular without CFS
+% 4 grey montage control BR
+% name = input('>>>> Participant name (e.g.: AB):  ','s');
+% age = input('>>>> Participant age (e.g.: 24):  ');
+% dominant_eye = input('>>>> dominant eye (e.g.: l/r):  ','s');
+% session = input('>>>> session (e.g.: 1/2/3):  ','s');
+
+name = 'k';
+age = 26;
+dominant_eye = 'l';
+session = 1;
 CFScovermark = 'p';   % f = full   p = part
+% expmark = 4;
+
 %----------------------------------------------------------------------
 %                      set up Psychtoolbox and skip  sync
 %----------------------------------------------------------------------
@@ -31,8 +43,11 @@ screenNumber = max(screens);
 blackColor = BlackIndex(screenNumber);
 whiteColor = WhiteIndex(screenNumber);
 grey = whiteColor/2;
-stereoMode = 4;   % 4 for sterroscope   11 for shutter glass  10 second times for test whether covered
-
+if expmark == 3
+    stereoMode = 0;   % 4 for sterroscope   11 for shutter glass  10 second times for test whether covered
+else
+    stereoMode = 11;
+end
 % set the window size
 winSize = [0 0 1024 768];   %[0 0 1024 768];
 
@@ -81,7 +96,7 @@ spaceKey = KbName('space');
 %----------------------------------------------------------------------
 
 % Experiment setup
-trialNumber = 40; % have to be divided by  8
+trialNumber = 36; % have to be divided by  12
 blockNumber = 6;
 
 all = RespStartMatrix();
@@ -93,7 +108,7 @@ gaborMatSingle = {'upperRight_rightward','upperRight_leftward'};
 % intervalTimesMatSingle = [0 0.25 0.5 1];    % intervalTime second
 gaborDistanceFromFixationDegree = [10];   % visual angle degree
 barDisFromGaborStartDeg = [-1 0 1];
-eyeCFS = [0 1];  %0 mean left eye 
+eyeCFS = [0 1];  %0 mean left eye
 % gabor location from center in angle  but fixation move left 3 degree
 xCenter = xCenter - gabor.fixationPixel;
 yCenter = yCenter;
@@ -127,7 +142,7 @@ blockData = [];
 %         end
 %     end
 % end
-% 
+%
 % subData = repmat(pickupData,repeatTimes,1);
 
 if debug == 'n'
@@ -141,7 +156,7 @@ end
 % dotLocaMat = repmat([1; 2; 3],trialNumber/3,1);
 % dotLocaRand = dotLocaMat(Shuffle(1:length(dotLocaMat)));
 
-bar.Delay = 1;
+barDelay = 1;
 %----------------------------------------------------------------------
 %%%                         CFS represented eye
 %----------------------------------------------------------------------
@@ -158,8 +173,8 @@ CFSMatMovie=Shuffle(CFSMatMovie);
 CFSFrames = 100;
 CFSwidth = 30; %30;
 CFScoverGabor = 25;
-CFScont = 1;
-
+CFScont = 0.8;
+CFSoffFrame = 15;
 
 % load CFS images and Make Textures
 % CFSsize_scale = 0.8;
@@ -175,12 +190,20 @@ CFScont = 1;
 for i=1:CFSFrames
     CFSMatMovie{i} =CFScont*(CFSMatMovie{i}-128)+128;
     CFSImage=CFSMatMovie{i};%.*mask+ContraN;
-%     CFSImage(:,:,4)=mask2*255;
+    %     CFSImage(:,:,4)=mask2*255;
     
-%     CFSImage = CFSImage((256/2-128*CFSsize_scale):(256/2+128*CFSsize_scale),(256/2-128*CFSsize_scale):(256/2+128*CFSsize_scale),:);
+    %     CFSImage = CFSImage((256/2-128*CFSsize_scale):(256/2+128*CFSsize_scale),(256/2-128*CFSsize_scale):(256/2+128*CFSsize_scale),:);
     CFSTex(i)=Screen('MakeTexture',window,CFSImage);
 end
 
+
+% Screen('DrawDots', window,[xCenter, yCenter], 10, [255 255 255 255], [], 2);
+Screen('SelectStereoDrawBuffer', window, 0);
+Screen('FrameOval', window, blackColor, [xCenter - 50 yCenter - 50 xCenter + 50  yCenter + 50], 4);
+Screen('SelectStereoDrawBuffer', window, 1);
+Screen('FrameOval', window, blackColor, [xCenter - 50 yCenter - 50 xCenter + 50  yCenter + 50], 4);
+Screen('Flip', window);
+KbStrokeWait;
 %----------------------------------------------------------------------
 %                       Experimental loop
 %----------------------------------------------------------------------
@@ -190,11 +213,13 @@ for block = 1: blockNumber
     
     
     for trial = 1:trialNumber
-        
         % If this is the first trial we present a start screen and wait for a
         % key-press
         if trial == 1
             formatSpec = 'This is the %d of %d block. \n\n Press Any Key To Begin';
+            if block ~= 1
+                formatSpec = 'You could have a rest. \n\n This is the %d of %d block. \n\n Press Any Key To Begin';
+            end
             A1 = block;
             A2 = blockNumber;
             str = sprintf(formatSpec,A1,A2);
@@ -216,7 +241,7 @@ for block = 1: blockNumber
         
         
         [InternalDriftPhaseIncrFactor,xframeFactor,yframeFactor,cueVerDisPixFactor,gaborfixationFactor,...
-            orientation,subIlluDegree,gaborStartLocMoveXFactor,gaborStartLocMoveYFactor,meanSubIlluDegree] = conditionRandDis(condition,blockData,trial);
+            orientation,subIlluDegree,gaborStartLocMoveXFactor,gaborStartLocMoveYFactor,meanSubIlluDegree] = conditionRandDis(condition); %
         
         yframe = [1:gabor.SpeedFrame*cos(subIlluDegree*pi/360):500];
         xframe =  yframe * tan(subIlluDegree*pi/360);
@@ -251,11 +276,15 @@ for block = 1: blockNumber
             if frame == 1
                 if condition == 'upperRight_rightward'
                     gaborLoc.Start_R = gaborLocation;
+                    gaborLoc.Start = gaborLoc.Start_R;
                     [dotXpos_R_st,dotYpos_R_st] = findcenter(gaborLoc.Start_R);
                 elseif  condition == 'upperRight_leftward'
                     gaborLoc.Start_L = gaborLocation;
+                    gaborLoc.Start = gaborLoc.Start_L;
                     [dotXpos_L_st,dotYpos_L_st] = findcenter(gaborLoc.Start_L);
                 end
+                
+                
             end
             
             
@@ -275,14 +304,18 @@ for block = 1: blockNumber
                 + xframeFactor * xframe(frameCFS), yCenter +  gaborStartLocMoveYFactor * gaborStartLocMoveYPixel + yframeFactor * yframe(frameCFS));
             if condition == 'upperRight_rightward'
                 gaborLoc.End_R = gaborLocationaCFS;
+                gaborLoc.End = gaborLoc.End_R;
                 [dotXpos_R_end,dotYpos_R_end] = findcenter(gaborLoc.End_R);
+                % abor full covered
                 if CFScovermark == 'f'
                     CFSloca_R = [dotXpos_R_end - CFSwidth  dotYpos_R_end - CFScoverGabor  dotXpos_R_st + CFSwidth  dotYpos_R_st + CFScoverGabor];
+                    %                   Gabor partly covered
                 elseif CFScovermark == 'p'
                     CFSloca_R = [dotXpos_R_end - CFSwidth  dotYpos_R_end  dotXpos_R_st + CFSwidth  dotYpos_R_st + CFScoverGabor];
                 end
             elseif  condition == 'upperRight_leftward'
                 gaborLoc.End_L = gaborLocationaCFS;
+                gaborLoc.End = gaborLoc.End_L;
                 [dotXpos_L_end,dotYpos_L_end] = findcenter(gaborLoc.End_L);
                 if CFScovermark == 'f'
                     CFSloca_L = [dotXpos_L_end - CFSwidth  dotYpos_L_end - CFScoverGabor  dotXpos_L_st + CFSwidth  dotYpos_L_st + CFScoverGabor];
@@ -305,28 +338,44 @@ for block = 1: blockNumber
             %----------------------------------------------------------------------
             % randomize the CFS eye
             eye = eyeCFS(blockData(trial,4));
-            
-            
             w = randi(100,1);
             
-            Screen('SelectStereoDrawBuffer', window, eye);  % 0 mean left eye
-            %             Screen('DrawTexture',window,backTex);
-            Screen('DrawDots', window,[xCenter, yCenter], 10, [255 255 255 255], [], 2);
-            Screen('DrawTextures', window, gabor.tex, [], gaborLocation, orientation, [], [], [], [],...
-                kPsychDontDoRotation, gabor.propertiesMatFirst');
-            
-            
-            Screen('SelectStereoDrawBuffer', window, 1-eye); % 1 means right eye   CFS
-            Screen('DrawDots', window,[xCenter, yCenter], 10, [255 255 255 255], [], 2);
-            %             Screen('DrawTexture',window,backTex);
-                        % chose what time the CFS disappear
-            if frame > (round(gabor.stimulusTime * framerate) - 10)
+            % separate main experiment and control experiment
+            if expmark == 3
                 Screen('DrawDots', window,[xCenter, yCenter], 10, [255 255 255 255], [], 2);
+                Screen('DrawTextures', window, gabor.tex, [], gaborLocation, orientation, [], [], [], [],...
+                    kPsychDontDoRotation, gabor.propertiesMatFirst');
             else
-                if condition == 'upperRight_rightward'
-                    Screen('DrawTexture',window,CFSTex(w),[],CFSloca_R); % CFSloca_R
-                elseif  condition == 'upperRight_leftward'
-                    Screen('DrawTexture',window,CFSTex(w),[],CFSloca_L); % ,CFSloca_L   [154.4633  543.7759  204.4633  593.7759]
+                
+                Screen('SelectStereoDrawBuffer', window, eye);  % 0 mean left eye
+                %             Screen('DrawTexture',window,backTex);
+                Screen('DrawDots', window,[xCenter, yCenter], 10, [255 255 255 255], [], 2);
+                Screen('DrawTextures', window, gabor.tex, [], gaborLocation, orientation, [], [], [], [],...
+                    kPsychDontDoRotation, gabor.propertiesMatFirst');
+                % 4 grey montage control BR
+                if expmark == 4
+                    [GreyMontageStartX,GreyMontageStartY] = findcenter(gaborLoc.Start);
+                    [GreyMontageEndX,GreyMontageEndY] = findcenter(gaborLoc.End);
+                    GreyMontageRect = [GreyMontageEndX - CFSwidth    GreyMontageEndY  GreyMontageStartX + CFSwidth  GreyMontageStartY + CFScoverGabor];
+                    Screen('FillRect', window, 128, GreyMontageRect);
+                end
+                
+                
+                Screen('SelectStereoDrawBuffer', window, 1-eye); % 1 means right eye   CFS
+                Screen('DrawDots', window,[xCenter, yCenter], 10, [255 255 255 255], [], 2);
+                %             Screen('DrawTexture',window,backTex);
+                % chose what time the CFS disappear
+                %             control binocular without CFS
+                
+                
+                if frame > (round(gabor.stimulusTime * framerate) - CFSoffFrame)
+                    Screen('DrawDots', window,[xCenter, yCenter], 10, [255 255 255 255], [], 2);
+                else
+                    if condition == 'upperRight_rightward'
+                        Screen('DrawTexture',window,CFSTex(w),[],CFSloca_R); % CFSloca_R
+                    elseif  condition == 'upperRight_leftward'
+                        Screen('DrawTexture',window,CFSTex(w),[],CFSloca_L); % ,CFSloca_L   [154.4633  543.7759  204.4633  593.7759]
+                    end
                 end
             end
             
@@ -345,7 +394,7 @@ for block = 1: blockNumber
         
         %         Screen('DrawDots', window,[xCenter,  yCenter], 10, [255 255 255 255], [], 2);
         Screen('Flip',window);
-        WaitSecs(bar.Delay);
+        WaitSecs(barDelay);
         
         %----------------------------------------------------------------------
         %%%                         bar setting
@@ -410,17 +459,21 @@ for block = 1: blockNumber
                 ShowCursor;
                 sca;
                 return
-                % the bar was on the left of the gabor 
+                % the bar was on the left of the gabor
             elseif keyCode(leftKey)
-                response = 0;
+                response = 0;   %  origin 1
                 respToBeMade = false;
                 % the bar was on the right of gabor
             elseif keyCode(rightKey)
-                response = ;
+                response = 1; % origin 2
                 respToBeMade = false;
-                % the bar was seen during the mondrian
-            elseif keyCode(spaceKey)
+                % perceived nothing
+            elseif keyCode(upKey)
                 response = NaN;
+                respToBeMade = false;
+                % when Gabor break through
+            elseif keyCode(spaceKey)
+                response = 3;
                 respToBeMade = false;
             end
         end
@@ -462,9 +515,18 @@ end
 
 time = clock;
 RespMat = [all.Block all.Trial  all.condition all.gaborDistanceFromFixationDegree all.barDisFromGaborStartDeg all.eye all.responseVector all.responseTimeVector];
-fileName = ['../../data/CFS/' subject_name '-' num2str(time(1)) '-' num2str(time(2)) '-' num2str(time(3)) '-' num2str(time(4)) '-' num2str(time(5)) '.mat'];
-save(fileName);
+if expmark == 1
+    savePath = '../../data/CFS/main/'
+elseif expmark == 2
+    savePath = '../../data/CFS/nointer/'
+elseif expmark == 3
+    savePath = '../../data/CFS/binocular/'
+elseif expmark == 4
+    savePath = '../../data/CFS/greyMontage/'
+end
 
+fileName = [savePath  subject_name session '-' num2str(time(1)) '-' num2str(time(2)) '-' num2str(time(3)) '-' num2str(time(4)) '-' num2str(time(5)) '.mat'];
+save(fileName);
 
 
 

@@ -22,11 +22,10 @@ addpath '../../../function';
 
 eachPercLoc = 'n';
 
-
-sbjnames = {'guyang','linweiru','lucy','qinxiwen','newhuijiahan'}; % ,'guyang','linweiru2','lucy','qinxiwen','newhuijiahan'
+% ,'guyang','linweiru','lucy','qinxiwen','newhuijiahan'
+sbjnames = {'newhuijiahan'}; 
 % for using white dot to test the endpoint of illusion
 cd '../../../data/GaborDrift/flash_lineAdjust/percLocaTest/added_gabor_location'
-
 
 
 % show the physical path to check the result
@@ -37,7 +36,7 @@ for sbjnum = 1:length(sbjnames)
     s2 = '*.mat';
     s3 = strcat(s1,s2);
     if sbjnum > 1
-        cd '../percLocaTest/added_gabor_location'
+        cd '../../percLocaTest/added_gabor_location'
     end
     Files = dir([s3]);
     load (Files.name);
@@ -127,8 +126,8 @@ for sbjnum = 1:length(sbjnames)
     
     
     cd '../../../../../analysis/flash_lineAdjust'
-    %     cd '../../data/GaborDrift/flash_lineAdjust/main_AP/added_gabor_location'
-    cd '../../data/GaborDrift/flash_lineAdjust/onewhiteflash_lineAdjust'
+%       cd '../../data/GaborDrift/flash_lineAdjust/main_AP/added_gabor_location'
+    cd '../../data/GaborDrift/flash_lineAdjust/onewhiteflash_lineAdjust_1000ms'
     
     Files = dir([s3]);
     load (Files.name);
@@ -137,6 +136,9 @@ for sbjnum = 1:length(sbjnames)
     %     intervalTimesMatSingle = [0 0.05 0.1 0.15 0.2 0.25 0.3 0.35];
     %     gaborLoc.Cue_L = gaborCueLoca_L;
     %     gaborLoc.Cue_R = gaborCueLoca_R;
+    
+    [gaborLoc] = gaborLocCal(gabor,xCenter,yCenter,gaborDistanceFromFixationPixel,viewingDistance,screenXpixels,displaywidth,framerate);
+    
     
     [dotXpos_L_cue(sbjnum),dotYpos_L_cue(sbjnum)] = findcenter(gaborLoc.Cue_L);
     [dotXpos_R_cue(sbjnum),dotYpos_R_cue(sbjnum)] = findcenter(gaborLoc.Cue_R);
@@ -242,11 +244,11 @@ end
 
 
 % title('proportion of apparent motion perceived from the end of perceived path','FontSize',15);
-axis([-110 1100 0 2]);
+% axis([-30 400 0 2]);
 xlabel('probe delay(ms)');%,'fontSize',40);
 % ylabel('proportion from perceived endpoint');%,'FontSize',40);
 set(gca,'FontSize',35);
-xticks([0 250 500 750 1000]);
+% xticks([0 250 500 750 1000]);
 % yticklabels({'0 from physical','1 from perceived'});
 % xticklabels({'x = 0','x = 5','x = 10'})
 % legend('internal motion leftward','internal motion rightward','location','best')

@@ -14,13 +14,13 @@ addpath '../../../function';
 eachPercLoc = 'y';
 
 % decide analysis which distance
-mark = 1;
+mark = 2;
 sbjnames = {'lucy'};  % 'huijiahan','lucy','hehuixia','guofanhua','linweiru' huijiahan-2019-4-22-9-59
 % for test flash apparent motion line adjust
 if mark == 1
     cd '../../../data/GaborDrift/flash_lineAdjust/percLocaTest/'
 elseif mark == 2
-    cd '../../../data/GaborDrift/flash_lineAdjust/main_AP'
+    cd '../../../data/GaborDrift/flash_lineAdjust/main_AP/added_gabor_cue_location'
 elseif mark == 3
     cd '../../data/GaborDrift/flash_lineAdjust/circle_control'
 elseif mark == 4
@@ -59,8 +59,8 @@ for sbjnum = 1:length(sbjnames)
     %     load the time delay document to calculate the cue location
     %%%------------------------------------------------------------------
 %     cd '../main_AP/added_gabor_location'
-        cd '../../../../analysis/flash_lineAdjust/normalized_proportion'
-        cd '../../../data/GaborDrift/flash_lineAdjust/onewhiteflash_lineAdjust'
+        cd '../../../../../analysis/flash_lineAdjust/normalized_proportion'
+        cd '../../../data/GaborDrift/flash_lineAdjust/onewhiteflash_lineAdjust_1000ms'
     
     Files = dir([s3]);
     load (Files.name);

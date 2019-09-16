@@ -1,5 +1,7 @@
 % show perceived location, gabor trajactory and line adjustable
 % experiment result in the same figure
+% flip the perceived location over the physical trajactory
+
 
 clear all;
 clear all;
@@ -11,10 +13,10 @@ eachPercLoc = 'y';
 showwardmark = 'b';
 % decide analysis which distance
 mark = 1;
-sbjnames = {'qinxiwen'};  % 'huijiahan','lucy','hehuixia','guofanhua','linweiru' huijiahan-2019-4-22-9-59
+sbjnames = {'newhuijiahan'};  % 'huijiahan','lucy','hehuixia','guofanhua','linweiru' huijiahan-2019-4-22-9-59
 % for test flash apparent motion line adjust
 if mark == 1
-    cd '../../../data/GaborDrift/flash_lineAdjust/percLocaTest'
+    cd '../../../data/GaborDrift/flash_lineAdjust/percLocaTest/added_gabor_location'
 elseif mark == 2
     cd '../../data/GaborDrift/flash_lineAdjust/main_AP'
 elseif mark == 3

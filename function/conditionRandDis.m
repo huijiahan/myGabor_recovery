@@ -1,9 +1,10 @@
+% 2 location illusion size
 % put the condition in and out put the parameters to set up the gabor
 % trajoctory and rotation direction
 % for apparent motion line adjust task
 
 function [InternalDriftPhaseIncrFactor,xframeFactor,yframeFactor,cueVerDisPixFactor,gaborfixationFactor,...
-    orientation,subIlluDegree,gaborStartLocMoveXFactor,gaborStartLocMoveYFactor,meanSubIlluDegree] = conditionRandDis(condition,blockData,trial);
+    orientation,subIlluDegree,gaborStartLocMoveXFactor,gaborStartLocMoveYFactor,meanSubIlluDegree] = conditionRandDis(condition);% ,blockData,trial);
         % InternalDriftPhaseIncrPerFrame > 0 internal drift leftward
         % InternalDriftPhaseIncrPerFrame < 0 internal drift rightward
         % cueVerDisPixFactor = 1  fixation upward
@@ -18,7 +19,7 @@ function [InternalDriftPhaseIncrFactor,xframeFactor,yframeFactor,cueVerDisPixFac
         
         % delete 7 dva rightward  7dva    leftward 7 dva  
 %         rightward 10dva  leftward 10dva
- meanSubIlluDegree =  [0 0];
+ meanSubIlluDegree =  [37.3636   62.8182];
  
 % rightward 7dva   blockData(trial,1)   fixation distance
 % if  (strcmp(condition,'upperRight_rightward')  &&  blockData(trial,1) == 1)

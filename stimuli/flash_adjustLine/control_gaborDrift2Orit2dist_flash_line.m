@@ -154,12 +154,20 @@ gaussDim = round(deg2pix(gabor.VisualAngle,viewingDistance,screenXpixels,display
 %%%                         control flash parameter
 %----------------------------------------------------------------------
 
-dotFlag_appar = 1; % 1 is green flash  2 is white flash
-dotFlag_out = 2;
-dotFlag_in = 3; % 3 is black flash
-standDevia_appar = 5;   % size of gaussian
-standDevia_out = 6;
-standDevia_in = 10; % size of center black gaussian
+% dotFlag_appar = 2; % 1 is green flash  2 is white flash
+% dotFlag_out = 2;
+% dotFlag_in = 3; % 3 is black flash
+% standDevia_appar = 5;   % size of gaussian
+% standDevia_out = 6;
+% standDevia_in = 10; % size of center black gaussian
+
+gauss.dotFlag.appar = 2; % 1 is green flash   2 is white flash
+gauss.dotFlag.out = 2;
+gauss.dotFlag.in = 3;% 3 is black flash
+
+gauss.standDevia.appar = 5;%  size of gaussian
+gauss.standDevia.out = 6;
+gauss.standDevia.in = 10;
 
 %----------------------------------------------------------------------
 %                       Experimental loop
@@ -206,7 +214,7 @@ for block = 1:blockNumber
         
         
         [InternalDriftPhaseIncrFactor,xframeFactor,yframeFactor,cueVerDisPixFactor,gaborfixationFactor,...
-            orientation,subIlluDegree,gaborStartLocMoveXFactor,gaborStartLocMoveYFactor,meanSubIlluDegree] = conditionRandDis(condition,blockData,trial);
+            orientation,subIlluDegree,gaborStartLocMoveXFactor,gaborStartLocMoveYFactor,meanSubIlluDegree] = conditionRandDis(condition); %,blockData,trial
         
         yframe = [1:gabor.SpeedFrame*cos(subIlluDegree*pi/360):500];
         xframe =  yframe * tan(subIlluDegree*pi/360);
@@ -236,13 +244,13 @@ for block = 1:blockNumber
             
             if frame == 1
                 if condition == 'upperRight_rightward'
-                    gaborStartLocation_R = gaborLocation;
+                    gaborLoc.Start_R = gaborLocation;
+                    
                 elseif  condition == 'upperRight_leftward'
-                    gaborStartLocation_L = gaborLocation;
+                    gaborLoc.Start_L = gaborLocation;
+                    
                 end
-            end
-            
-            
+            end            
             % at the end of the gabor generate a green flash
             % N > 0 : round to N digits to the right of the decimal point.
             % so -2 means generate flash for 1 frame
@@ -252,7 +260,7 @@ for block = 1:blockNumber
             if frame > (round(gabor.stimulusTime * framerate) - 2)
                 
                 
-                [dstRects,flash] = gaussianDot(dotSizePix,gaussDim,dotXpos_gabor,dotYpos_gabor,grey,whitecolor,standDevia_appar,dotFlag_appar);
+                [dstRects,flash] = gaussianDot(dotSizePix,gaussDim,dotXpos_gabor,dotYpos_gabor,grey,whitecolor,gauss.standDevia.appar,gauss.dotFlag.appar);
                 % Draw the dot to the screen. For information on the command used in
                 % this line type "Screen DrawDots?" at the command line (without the
                 % brackets) and press enter. Here we used good antialiasing to get nice
@@ -265,8 +273,8 @@ for block = 1:blockNumber
                 Screen('DrawTextures', window, masktex,[],dstRects);
                 
             else
-                [dstRects,flash_out] = gaussianDot(dotSizePix,gaussDim,dotXpos_gabor,dotYpos_gabor,grey,whitecolor,standDevia_out,dotFlag_out);
-                [dstRects,flash_in] = gaussianDot(dotSizePix,gaussDim,dotXpos_gabor,dotYpos_gabor,grey,whitecolor,standDevia_in,dotFlag_in);
+                [dstRects,flash_out] = gaussianDot(dotSizePix,gaussDim,dotXpos_gabor,dotYpos_gabor,grey,whitecolor,gauss.standDevia.out,gauss.dotFlag.out);
+                [dstRects,flash_in] = gaussianDot(dotSizePix,gaussDim,dotXpos_gabor,dotYpos_gabor,grey,whitecolor,gauss.standDevia.in,gauss.dotFlag.in);
                 Screen('BlendFunction', window, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
                 
                 
@@ -310,34 +318,38 @@ for block = 1:blockNumber
         t0 = GetSecs;
         Screen('DrawDots', window,[xCenter,   yCenter], 10, [255 255 255 255], [], 2);
         
+        
+            %----------------------------------------------------------------------
+            %                       save the gabor end location
+            %----------------------------------------------------------------------
+            if frame == round(gabor.stimulusTime * framerate) - 1
+                if condition == 'upperRight_rightward'
+                    gaborLoc.End_R = gaborLocation;
+                elseif  condition == 'upperRight_leftward'
+                    gaborLoc.End_L = gaborLocation;
+                end
+                
+                if condition == 'upperRight_rightward'
+                    gaborLoc.Cue_R = cueLocation;
+                elseif  condition == 'upperRight_leftward'
+                    gaborLoc.Cue_L = cueLocation;
+                end
+            end
+
+        
+        
         %----------------------------------------------------------------------
-        %                       save the gabor end location
+        %                       draw probe (white flash)
         %----------------------------------------------------------------------
         
-        if condition == 'upperRight_rightward'
-            gaborEndLocation_R = gaborLocation;
-        elseif  condition == 'upperRight_leftward'
-            gaborEndLocation_L = gaborLocation;
-        end
-        
-        
-        %----------------------------------------------------------------------
-        %                       draw test gabor(green flash)
-        %----------------------------------------------------------------------
-        
-        if condition == 'upperRight_rightward'
-            gaborCueLoca_R = cueLocation;
-        elseif  condition == 'upperRight_leftward'
-            gaborCueLoca_L = cueLocation;
-        end
-        
+
         
         % draw the green gaussian flash at the cue location
         dotXpos_cue = (cueLocation(1) + cueLocation(3))/2;
         dotYpos_cue = (cueLocation(2) + cueLocation(4))/2;
         Screen('BlendFunction', window, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         
-        [dstRects,flash] = gaussianDot(dotSizePix,gaussDim,dotXpos_cue,dotYpos_cue,grey,whitecolor,standDevia_appar,dotFlag_appar);
+        [dstRects,flash] = gaussianDot(dotSizePix,gaussDim,dotXpos_cue,dotYpos_cue,grey,whitecolor,gauss.standDevia.appar,gauss.dotFlag.appar);
         masktex = Screen('MakeTexture', window, flash);
         %                 Screen('DrawDots', window, [dotXpos_cue dotYpos_cue], dotSizePix, dotColor, [], 2);
         

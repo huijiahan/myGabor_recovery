@@ -11,7 +11,7 @@ Perc_prop_mark = input('>>>> plot each perceived proportion? (e.g.: n or y):  ',
 Perc_loca_mark = input('>>>> scatter perceived location? (e.g.: n or y):  ','s');
 
 % for test flash apparent motion line adjust
-    cd '../../data/GaborDrift/flash_lineAdjust/main_AP'
+    cd '../../data/GaborDrift/flash_lineAdjust/main_AP/added_gabor_cue_location/'
     % 0.5 dva
     sbjnames = {'guofanhua'}; % 'linweiru','guofanhua','wangzetong','huijiahan664'，'sunliwei'
 
@@ -27,7 +27,7 @@ for sbjnum = 1:length(sbjnames)
     gaborDistanceFromFixationDegree = [10];
 
        
-    [LineAngle_ave] = RespMat2LineAngle_ave(RespMat,intervalTimesMatSingle,gaborDistanceFromFixationDegree);
+    [LineAngle_ave] = RespMat2LineAngle_ave_forDelay(RespMat,intervalTimesMatSingle,gaborDistanceFromFixationDegree);
     
     
     [dotXpos_L_st,dotYpos_L_st] = findcenter(gaborStartLocation_L);
@@ -78,9 +78,9 @@ for sbjnum = 1:length(sbjnames)
 %     legend(['S' num2str(sbjnum)]);
     legend('S2');
     
+end
 
-
-cd '../../../../analysis/flash_lineAdjust'
+cd '../../../../../analysis/flash_lineAdjust'
 %     cd '../../data/GaborDrift/flash_lineAdjust/circle_control'
 %     sbjnames = {'guofanhua'};
 %     lineAngleColumn = 7;
@@ -99,7 +99,7 @@ cd '../../../../analysis/flash_lineAdjust'
 
 %     legend(sbjnames);
 %     title(sbjnames,'FontSize',40);
-cd '../../../../analysis/flash_lineAdjust'
+% cd '../../../../../analysis/flash_lineAdjust'
 
 
 

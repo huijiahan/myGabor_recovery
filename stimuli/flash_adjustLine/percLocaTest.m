@@ -176,7 +176,7 @@ for block = 1:blockNumber
         
         
         [InternalDriftPhaseIncrFactor,xframeFactor,yframeFactor,cueVerDisPixFactor,gaborfixationFactor,...
-            orientation,subIlluDegree,gaborStartLocMoveXFactor,gaborStartLocMoveYFactor,meanSubIlluDegree] = conditionRandDis(condition,blockData,trial);
+            orientation,subIlluDegree,gaborStartLocMoveXFactor,gaborStartLocMoveYFactor,meanSubIlluDegree] = conditionRandDis(condition); %,blockData,trial
         
         yframe = [1:gabor.SpeedFrame*cos(subIlluDegree*pi/360):500];
         xframe =  yframe * tan(subIlluDegree*pi/360);
@@ -243,15 +243,15 @@ for block = 1:blockNumber
         % wait 0.3 to present adjustable dot
         WaitSecs(gauss.testDotDelay);
         
-        %----------------------------------------------------------------------
-        %                       save the gabor end location
-        %----------------------------------------------------------------------
-        
-        if condition == 'upperRight_rightward'
-            gaborLoc.End_R = gaborLocation;
-        elseif  condition == 'upperRight_leftward'
-            gaborLoc.End_L = gaborLocation;
-        end
+        %         %----------------------------------------------------------------------
+        %         %                       save the gabor end location
+        %         %----------------------------------------------------------------------
+        %
+        %         if condition == 'upperRight_rightward'
+        %             gaborLoc.End_R = gaborLocation;
+        %         elseif  condition == 'upperRight_leftward'
+        %             gaborLoc.End_L = gaborLocation;
+        %         end
         
         %         if condition == 'upperRight_rightward'
         %             gaborLoc.Cue_R = cueLocation;
@@ -280,19 +280,19 @@ for block = 1:blockNumber
         %----------------------------------------------------------------------
         %                       save the adjustable flash location
         %----------------------------------------------------------------------
-        
-        if condition == 'upperRight_rightward'
-            gaborLoc.End_R = gaborLocation;
-            gaborLoc.Phy_R = gaborLocation;
-            gaborLoc.Perc_R = gaborLocationPerc;
-            gaborLoc.Mid_R = gaborEndLocaMid;
-        elseif  condition == 'upperRight_leftward'
-            gaborLoc.End_L = gaborLocation;
-            gaborLoc.Phy_L = gaborLocation;
-            gaborLoc.Perc_L = gaborLocationPerc;
-            gaborLoc.Mid_L = gaborEndLocaMid;
+        if frame == round(gabor.stimulusTime * framerate) - 1
+            if condition == 'upperRight_rightward'
+                gaborLoc.End_R = gaborLocation;
+                gaborLoc.Phy_R = gaborLocation;
+                gaborLoc.Perc_R = gaborLocationPerc;
+                gaborLoc.Mid_R = gaborEndLocaMid;
+            elseif  condition == 'upperRight_leftward'
+                gaborLoc.End_L = gaborLocation;
+                gaborLoc.Phy_L = gaborLocation;
+                gaborLoc.Perc_L = gaborLocationPerc;
+                gaborLoc.Mid_L = gaborEndLocaMid;
+            end
         end
-        
         % RespMat column 8    1 2 3
         dotLoca = [gaborLocationPhy; gaborEndLocaMid; gaborLocationPerc];
         

@@ -318,8 +318,8 @@ save(fileName,'RespMat','subIlluDegree','gabor','viewingDistance','trialNumber',
 
 
 plot(subIlluDegree');
-meansubIlluDegree = mean(subIlluDegree(:,10:end),2);
-meansubIlluDegree'
+meanSubIlluDegree = mean(subIlluDegree(:,10:end),2);
+meanSubIlluDegree'
 % plot(meansubIlluDegree);
 
 

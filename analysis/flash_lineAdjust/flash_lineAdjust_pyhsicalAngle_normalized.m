@@ -8,7 +8,7 @@ addpath '../../function';
 
 
 % Perc_prop_mark = input('>>>> plot each perceived proportion? (e.g.: n or y):  ','s');
-Perc_prop_mark = 'n';
+Perc_prop_mark = 'y';
 % Perc_loca_mark = input('>>>> scatter perceived location? (e.g.: n or y):  ','s');
 Perc_loca_mark = 'n';
 
@@ -23,7 +23,7 @@ elseif mark == 2
 elseif mark == 3
     cd '../../data/GaborDrift/flash_lineAdjust/percLocaTest'
 elseif mark == 4
-    cd '../../data/GaborDrift/flash_lineAdjust/onewhiteflash_lineAdjust'
+    cd '../../data/GaborDrift/flash_lineAdjust/onewhiteflash_lineAdjust_1000ms'
 end
 
 lineAngleColumn = 7;
@@ -157,7 +157,7 @@ for sbjnum = 1:length(sbjnames)
     if Perc_prop_mark == 'y'
         if mark == 1
             plot(intervalTimesMatSingle*1000,(Perc_prop(:,sbjnum))*100,'color','r');
-        elseif mark == 2
+        else%if mark == 2
             plot(intervalTimesMatSingle*1000,(Perc_prop(:,sbjnum))*100,'color','b');
         end
         hold on;
@@ -182,7 +182,7 @@ if Perc_prop_mark == 'n'
     end
 end
 title('proportion of apparent motion perceived from the end of perceived path','FontSize',20);
-axis([-10 400 -10 100]);
+% axis([-10 1000 -10 100]);
 xlabel('interval time between illusion and test gabor(ms)','fontSize',30);
 ylabel('proportion from perceived endpoint','FontSize',20);
 
