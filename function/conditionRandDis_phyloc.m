@@ -4,7 +4,7 @@
 % for apparent motion line adjust task
 
 function [InternalDriftPhaseIncrFactor,xframeFactor,yframeFactor,cueVerDisPixFactor,gaborfixationFactor,...
-    orientation,subIlluDegree,gaborStartLocMoveXFactor,gaborStartLocMoveYFactor,meanSubIlluDegree] = conditionRandDis(condition);% ,blockData,trial);
+    orientation,subIlluDegree,gaborStartLocMoveXFactor,gaborStartLocMoveYFactor] = conditionRandDis_phyloc(condition,meanSubIlluDegree);% ,blockData,trial);
         % InternalDriftPhaseIncrPerFrame > 0 internal drift leftward
         % InternalDriftPhaseIncrPerFrame < 0 internal drift rightward
         % cueVerDisPixFactor = 1  fixation upward
@@ -14,12 +14,12 @@ function [InternalDriftPhaseIncrFactor,xframeFactor,yframeFactor,cueVerDisPixFac
         % gaborfixationFactor = 1; fixation is in the right visual field
         % gaborfixationFactor = - 1; fixation is in the left visual field
         % yframeFactor = 1;   gabor move downward along y axis
-        % yframeFactor = - 1; gabor move downward along y axis
+        % yframeFactor = - 1; gabor move y decrease along y axis
  
         
         % delete 7 dva rightward  7dva    leftward 7 dva  
 %         rightward 10dva  leftward 10dva
- meanSubIlluDegree =  [0 0];
+%  meanSubIlluDegree =  [0 0];
  
 % rightward 7dva   blockData(trial,1)   fixation distance
 % if  (strcmp(condition,'upperRight_rightward')  &&  blockData(trial,1) == 1)

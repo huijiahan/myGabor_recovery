@@ -242,8 +242,8 @@ for block = 1: blockNumber
         % in leftward conditon respond left Incre = 1; right Incre = -1;
         
         % different condition means different directions
-        internalPattern1 = "rightward";
-        internalPattern2 = "leftward";
+        internalPattern1 = 'rightward';
+        internalPattern2 = 'leftward';
         iTF1 = contains(condition,internalPattern1);
         iTF2 = contains(condition,internalPattern2);
         

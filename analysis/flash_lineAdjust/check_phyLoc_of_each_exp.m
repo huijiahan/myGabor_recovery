@@ -10,13 +10,14 @@ eachPercLoc = 'y';
 % showwardmark = input('>>>> show rightward leftward or both? (e.g.: r or l or b):  ','s');
 showwardmark = 'b';
 % decide analysis which distance
-mark = 2;
-sbjnames = {'lucy'};  % 'huijiahan','lucy','hehuixia','guofanhua','linweiru' huijiahan-2019-4-22-9-59
+mark = 1;
+% 'newhuijiahan','guyang','huangjing','linweiru','lucy','qinxiwen','shariff','sunpu','zhaoyitong','zhengnan','zhoudaiyang','wangqizhi'
+sbjnames = {'zhoudaiyang'};  % 'huijiahan','lucy','hehuixia','guofanhua','linweiru' huijiahan-2019-4-22-9-59
 % for test flash apparent motion line adjust
 if mark == 1
     cd '../../data/GaborDrift/flash_lineAdjust/percLocaTest/added_gabor_location'
 elseif mark == 2
-    cd '../../data/GaborDrift/flash_lineAdjust/main_AP/added_gabor_location'
+    cd '../../data/GaborDrift/flash_lineAdjust/main_AP/added_gabor_cue_location'
 elseif mark == 3
     cd '../../data/GaborDrift/flash_lineAdjust/circle_control'
 elseif mark == 4
@@ -150,20 +151,30 @@ end
 % [dotXpos_R_st,dotYpos_R_st] = findcenter(gaborStartLocation_R);
 % [dotXpos_R_end,dotYpos_R_end] = findcenter(gaborEndLocation_R);
 
-[gaborLoc] = gaborLocCal(gabor,xCenter,yCenter,gaborDistanceFromFixationPixel,viewingDistance,screenXpixels,displaywidth,framerate);
-
-[dotXpos_L_st,dotYpos_L_st] = findcenter(gaborLoc.Start_L);
-[dotXpos_R_st,dotYpos_R_st] = findcenter(gaborLoc.Start_R);
-[dotXpos_L_end,dotYpos_L_end] = findcenter(gaborLoc.End_L);
-[dotXpos_R_end,dotYpos_R_end] = findcenter(gaborLoc.End_R);
-[dotXpos_L_cue,dotYpos_L_cue] = findcenter(gaborLoc.Cue_L);
-[dotXpos_R_cue,dotYpos_R_cue] = findcenter(gaborLoc.Cue_R);
+% [gaborLoc] = gaborLocCal(gabor,xCenter,yCenter,gaborDistanceFromFixationPixel,viewingDistance,screenXpixels,displaywidth,framerate,meanSubIlluDegree);
 
 
-originX_L = [dotXpos_L_st,dotXpos_L_end];
-originY_L = [dotYpos_L_st,dotYpos_L_end];
-originX_R = [dotXpos_R_st,dotXpos_R_end];
-originY_R = [dotYpos_R_st,dotYpos_R_end];
+[gaborLoc] = gaborLocMath(meanSubIlluDegree,viewingDistance,screenXpixels,displaywidth,gaborLoc);
+
+originX_L = [gaborLoc.Start_L_x,gaborLoc.End_L_x];
+originY_L = [gaborLoc.Start_L_y,gaborLoc.End_L_y];
+originX_R = [gaborLoc.Start_R_x,gaborLoc.End_R_x];
+originY_R = [gaborLoc.Start_R_y,gaborLoc.End_R_y];
+
+
+
+% [dotXpos_L_st,dotYpos_L_st] = findcenter(gaborLoc.Start_L);
+% [dotXpos_R_st,dotYpos_R_st] = findcenter(gaborLoc.Start_R);
+% [dotXpos_L_end,dotYpos_L_end] = findcenter(gaborLoc.End_L);
+% [dotXpos_R_end,dotYpos_R_end] = findcenter(gaborLoc.End_R);
+% [dotXpos_L_cue,dotYpos_L_cue] = findcenter(gaborLoc.Cue_L);
+% [dotXpos_R_cue,dotYpos_R_cue] = findcenter(gaborLoc.Cue_R);
+% 
+% 
+% originX_L = [dotXpos_L_st,dotXpos_L_end];
+% originY_L = [dotYpos_L_st,dotYpos_L_end];
+% originX_R = [dotXpos_R_st,dotXpos_R_end];
+% originY_R = [dotYpos_R_st,dotYpos_R_end];
 
 % plot the gabor trajactory
 if showwardmark == 'l'
@@ -181,8 +192,13 @@ end
 %         plot the cue location
 %----------------------------------------------------------------------
 
-cue_L = plot(dotXpos_L_cue,dotYpos_L_cue,'-o','color','y');
-cue_R = plot(dotXpos_R_cue,dotYpos_R_cue,'-o','color','k');
+cue_L = plot(gaborLoc.Cue_L_x,gaborLoc.Cue_L_y,'-o','color','y');
+cue_R = plot(gaborLoc.Cue_R_x,gaborLoc.Cue_R_y,'-o','color','k');
+
+
+% cue_L = plot(dotXpos_L_cue,dotYpos_L_cue,'-o','color','y');
+% cue_R = plot(dotXpos_R_cue,dotYpos_R_cue,'-o','color','k');
+
 
 %----------------------------------------------------------------------
 %         turn line angle to position and plot mean result
@@ -230,9 +246,27 @@ if mark == 2  || mark == 3 || mark == 4
     % ax.FontSize = 20;
 end
 
+    %----------------------------------------------------------------------
+    %             percentage of tested perceived location
+    %----------------------------------------------------------------------
+
+    dotXpos_L_ave = mean(dotXpos_L_Mat);
+    dotXpos_R_ave = mean(dotXpos_R_Mat);
+    
+    
+    real_perceiv_dist_L = abs(dotXpos_L_ave - gaborLoc.End_L_x);
+    real_perceiv_dist_R = abs(dotXpos_R_ave - gaborLoc.End_R_x);
+    full_dist_L = abs(gaborLoc.Start_L_x - gaborLoc.End_L_x) * 2;
+    full_dist_R = abs(gaborLoc.Start_R_x - gaborLoc.End_R_x) * 2;
+    perc_of_perceiv_L = real_perceiv_dist_L/full_dist_L;
+    perc_of_perceiv_R = real_perceiv_dist_R/full_dist_R;
+    ave_perc = (perc_of_perceiv_L + perc_of_perceiv_R)/2;
+
+
+
 % legend(graph(2),'0s', '250ms', '500ms', '750ms', '1s');
 % set(gca,'box','off');
-% axis equal;
+axis equal;
 set(gca,'Visible','off');
 % set(gca,'XColor','none','YColor','none')
 set(gca,'XTick',[], 'YTick', []);

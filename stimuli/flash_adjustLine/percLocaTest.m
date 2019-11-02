@@ -197,8 +197,8 @@ for block = 1:blockNumber
             
             gaborLocation = CenterRectOnPointd(gabor.rect, xCenter  + gaborfixationFactor * gaborDistanceFromFixationPixel + gaborStartLocMoveXFactor * gaborStartLocMoveXPixel  ...
                 + xframeFactor * xframe(frame), yCenter +  gaborStartLocMoveYFactor * gaborStartLocMoveYPixel + yframeFactor * yframe(frame));
-            % cueLocation = CenterRectOnPointd(gabor.rect, xCenter  + gaborfixationFactor * gaborDistanceFromFixationPixel + gaborStartLocMoveXFactor * gaborStartLocMoveXPixel,  ...
-            %    yCenter +  gaborStartLocMoveYFactor * gaborStartLocMoveYPixel + yframeFactor * yframe(frame) + cueVerDisPixFactor * cueVerDisPix);
+            cueLocation = CenterRectOnPointd(gabor.rect, xCenter  + gaborfixationFactor * gaborDistanceFromFixationPixel + gaborStartLocMoveXFactor * gaborStartLocMoveXPixel,  ...
+               yCenter +  gaborStartLocMoveYFactor * gaborStartLocMoveYPixel + yframeFactor * yframe(frame) + cueVerDisPixFactor * cueVerDisPix);
             %----------------------------------------------------------------------
             %                       save the gabor start location
             %----------------------------------------------------------------------
@@ -247,17 +247,17 @@ for block = 1:blockNumber
         %         %                       save the gabor end location
         %         %----------------------------------------------------------------------
         %
-        %         if condition == 'upperRight_rightward'
-        %             gaborLoc.End_R = gaborLocation;
-        %         elseif  condition == 'upperRight_leftward'
-        %             gaborLoc.End_L = gaborLocation;
-        %         end
+                if condition == 'upperRight_rightward'
+                    gaborLoc.End_R = gaborLocation;
+                elseif  condition == 'upperRight_leftward'
+                    gaborLoc.End_L = gaborLocation;
+                end
         
-        %         if condition == 'upperRight_rightward'
-        %             gaborLoc.Cue_R = cueLocation;
-        %         elseif  condition == 'upperRight_leftward'
-        %             gaborLoc.Cue_L = cueLocation;
-        %         end
+                if condition == 'upperRight_rightward'
+                    gaborLoc.Cue_R = cueLocation;
+                elseif  condition == 'upperRight_leftward'
+                    gaborLoc.Cue_L = cueLocation;
+                end
         
         %----------------------------------------------------------------------
         %%%                         adjustable flash setting
@@ -280,7 +280,7 @@ for block = 1:blockNumber
         %----------------------------------------------------------------------
         %                       save the adjustable flash location
         %----------------------------------------------------------------------
-        if frame == round(gabor.stimulusTime * framerate) - 1
+        if frame == ceil(gabor.stimulusTime * framerate) - 1
             if condition == 'upperRight_rightward'
                 gaborLoc.End_R = gaborLocation;
                 gaborLoc.Phy_R = gaborLocation;

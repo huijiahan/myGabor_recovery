@@ -14,7 +14,6 @@
 
 
 
-
 clear all;
 clear all;
 addpath '../../../function';
@@ -22,10 +21,11 @@ addpath '../../../function';
 
 eachPercLoc = 'n';
 
-% ,'guyang','linweiru','lucy','qinxiwen','newhuijiahan'
-sbjnames = {'newhuijiahan'}; 
+% 'huangjing','sunpu','zhengnan','zhaoyitong','guyang','linweiru','lucy','qinxiwen','newhuijiahan','zhoudaiyang'
+% 'newhuijiahan','guyang','huangjing','linweiru','lucy','qinxiwen','sunpu','zhaoyitong','zhengnan','zhoudaiyang'
+sbjnames = {'newhuijiahan','guyang','huangjing','linweiru','lucy','qinxiwen','sunpu','zhaoyitong','zhengnan','zhoudaiyang'}; %
 % for using white dot to test the endpoint of illusion
-cd '../../../data/GaborDrift/flash_lineAdjust/percLocaTest/added_gabor_location'
+cd '../../data/GaborDrift/flash_lineAdjust/percLocaTest/added_gabor_location'
 
 
 % show the physical path to check the result
@@ -126,8 +126,13 @@ for sbjnum = 1:length(sbjnames)
     
     
     cd '../../../../../analysis/flash_lineAdjust'
-%       cd '../../data/GaborDrift/flash_lineAdjust/main_AP/added_gabor_location'
-    cd '../../data/GaborDrift/flash_lineAdjust/onewhiteflash_lineAdjust_1000ms'
+    
+    % compare with AP
+      cd '../../data/GaborDrift/flash_lineAdjust/main_AP/added_gabor_cue_location'
+    % compare with control 
+%       cd '../../data/GaborDrift/flash_lineAdjust/circle_control/added_gabor_location'
+       % compare with 1000ms AP
+%     cd '../../data/GaborDrift/flash_lineAdjust/onewhiteflash_lineAdjust_1000ms'
     
     Files = dir([s3]);
     load (Files.name);
@@ -137,18 +142,33 @@ for sbjnum = 1:length(sbjnames)
     %     gaborLoc.Cue_L = gaborCueLoca_L;
     %     gaborLoc.Cue_R = gaborCueLoca_R;
     
-    [gaborLoc] = gaborLocCal(gabor,xCenter,yCenter,gaborDistanceFromFixationPixel,viewingDistance,screenXpixels,displaywidth,framerate);
     
+%     if sbjnum >= 6
+%     [gaborLoc] = gaborLocCal(gabor,xCenter,yCenter,gaborDistanceFromFixationPixel,viewingDistance,screenXpixels,displaywidth,framerate,meanSubIlluDegree);
+%     end
+  [gaborLoc] = gaborLocMath(meanSubIlluDegree,viewingDistance,screenXpixels,displaywidth,gaborLoc);   
+
+  gaborLoc.Cue_L_x(sbjnum) = gaborLoc.Cue_L_x;
+  gaborLoc.Cue_L_y(sbjnum) = gaborLoc.Cue_L_y;
+  gaborLoc.Cue_R_x(sbjnum) = gaborLoc.Cue_R_x;
+  gaborLoc.Cue_R_y(sbjnum) = gaborLoc.Cue_R_y;
+%   
+  
+%     [gaborLoc.Cue_L_x(sbjnum),gaborLoc.Cue_L_y(sbjnum)] = findcenter(gaborLoc.Cue_L);
+%     [gaborLoc.Cue_R_x(sbjnum),gaborLoc.Cue_R_y(sbjnum)] = findcenter(gaborLoc.Cue_R);
     
-    [dotXpos_L_cue(sbjnum),dotYpos_L_cue(sbjnum)] = findcenter(gaborLoc.Cue_L);
-    [dotXpos_R_cue(sbjnum),dotYpos_R_cue(sbjnum)] = findcenter(gaborLoc.Cue_R);
+%     gaborLoc.Cue_L_x(sbjnum) = gaborLoc.Cue_L_x;
+%     gaborLoc.Cue_L_y(sbjnum) = gaborLoc.Cue_L_y;
+%     gaborLoc.Cue_R_x(sbjnum) = gaborLoc.Cue_R_x;
+%     gaborLoc.Cue_R_y(sbjnum) = gaborLoc.Cue_R_y;
+    
     
     if physical_path_mark == 'y'
         %----------------------------------------------------------------------
         %             plot cue location
         %----------------------------------------------------------------------
-        plot(dotXpos_L_cue(sbjnum),dotYpos_L_cue(sbjnum),'mo', 'MarkerFaceColor','m','MarkerSize', 10);
-        plot(dotXpos_R_cue(sbjnum),dotYpos_R_cue(sbjnum),'go', 'MarkerFaceColor','g','MarkerSize', 10);
+        plot(gaborLoc.Cue_L_x(sbjnum),gaborLoc.Cue_L_y(sbjnum),'mo', 'MarkerFaceColor','m','MarkerSize', 10);
+        plot(gaborLoc.Cue_R_x(sbjnum),gaborLoc.Cue_R_y(sbjnum),'go', 'MarkerFaceColor','g','MarkerSize', 10);
         set(gca,'XAxisLocation','top','YAxisLocation','left','ydir','reverse');
         %----------------------------------------------------------------------
         %             plot perceived location
@@ -161,8 +181,12 @@ for sbjnum = 1:length(sbjnames)
     %             calculate perceived angle
     %----------------------------------------------------------------------
     
-    illuSize_L(sbjnum) = atan((dotXpos_L_ave(sbjnum) - dotXpos_L_cue(sbjnum))/(dotYpos_L_ave(sbjnum) - dotYpos_L_cue(sbjnum)));
-    illuSize_R(sbjnum) = atan((dotXpos_R_ave(sbjnum) - dotXpos_R_cue(sbjnum))/(dotYpos_R_ave(sbjnum) - dotYpos_R_cue(sbjnum)));
+%     illuSize_L(sbjnum) = atan((dotXpos_L_ave(sbjnum) - gaborLoc.Cue_L_x(sbjnum))/(dotYpos_L_ave(sbjnum) - gaborLoc.Cue_L_y(sbjnum)));
+%     illuSize_R(sbjnum) = atan((dotXpos_R_ave(sbjnum) - gaborLoc.Cue_R_x(sbjnum))/(dotYpos_R_ave(sbjnum) - gaborLoc.Cue_R_y(sbjnum)));
+    
+    
+    illuSize_L(sbjnum) = atan((dotXpos_L_ave(sbjnum) - gaborLoc.Cue_L_x(sbjnum))/(dotYpos_L_ave(sbjnum) - gaborLoc.Cue_L_y(sbjnum)));
+    illuSize_R(sbjnum) = atan((dotXpos_R_ave(sbjnum) - gaborLoc.Cue_R_x(sbjnum))/(dotYpos_R_ave(sbjnum) - gaborLoc.Cue_R_y(sbjnum)));
     
     PercIlluDegree(sbjnum,:) = [illuSize_R(sbjnum),illuSize_L(sbjnum)];
     
@@ -243,12 +267,15 @@ if physical_path_mark == 'n'
 end
 
 
+% [h,p]=ttest([1 1 1 1 1 1 1 1],Perc_prop_norm)
+
+
 % title('proportion of apparent motion perceived from the end of perceived path','FontSize',15);
 % axis([-30 400 0 2]);
 xlabel('probe delay(ms)');%,'fontSize',40);
 % ylabel('proportion from perceived endpoint');%,'FontSize',40);
 set(gca,'FontSize',35);
-% xticks([0 250 500 750 1000]);
+xticks([0 50 100 150 200 250 300 350]);
 % yticklabels({'0 from physical','1 from perceived'});
 % xticklabels({'x = 0','x = 5','x = 10'})
 % legend('internal motion leftward','internal motion rightward','location','best')

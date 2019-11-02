@@ -5,6 +5,7 @@
 
 clearvars;
 sca;
+gogglemark = input('>>>> goggle? (e.g.: y or n):  ','s');
 expmark = input('>>>> which exp (e.g.: 1/2/3/4):  ');
 % 1 CFS main exp BR  2 control nointernal motion BR  3 control binocular without CFS
 % 4 grey montage control BR
@@ -13,11 +14,12 @@ expmark = input('>>>> which exp (e.g.: 1/2/3/4):  ');
 % dominant_eye = input('>>>> dominant eye (e.g.: l/r):  ','s');
 % session = input('>>>> session (e.g.: 1/2/3):  ','s');
 
+
 name = 'k';
 age = 26;
 dominant_eye = 'l';
 session = 1;
-CFScovermark = 'p';   % f = full   p = part
+CFScovermark = 'p';   % f = full   p = part   part means the top edge of gabor over the CFS top edge and CFS disappear
 % expmark = 4;
 
 %----------------------------------------------------------------------
@@ -40,13 +42,21 @@ addpath '../../function';
 % set up screens
 screens = Screen('Screens');
 screenNumber = max(screens);
+screenNumber = max(screens);
+% Define black, white and grey
 blackColor = BlackIndex(screenNumber);
 whiteColor = WhiteIndex(screenNumber);
 grey = whiteColor/2;
+
+
 if expmark == 3
-    stereoMode = 0;   % 4 for sterroscope   11 for shutter glass  10 second times for test whether covered
+    stereoMode = 0;   % 4 for stereoscope   11 for shutter glass  10 second times for test whether covered
 else
-    stereoMode = 11;
+    if gogglemark == 'y'
+        stereoMode = 102;
+    elseif  gogglemark == 'n'
+        stereoMode = 4;
+    end
 end
 % set the window size
 winSize = [0 0 1024 768];   %[0 0 1024 768];
@@ -56,16 +66,30 @@ winSize = [0 0 1024 768];   %[0 0 1024 768];
 %                      open a screen
 %----------------------------------------------------------------------
 
-% [window winRect] = PsychImaging('OpenWindow',screenNumber,grey,winSize);
-[window winRect] = Screen('OpenWindow',screenNumber,128,winSize,[],[],stereoMode);
+if stereoMode == 102
+    % Prepare setup of imaging pipeline for onscreen window.
+    % This is the first step in the sequence of configuration steps.
+    PsychImaging('PrepareConfiguration');
+    PsychImaging('AddTask','General','SideBySideCompressedStereo');
+    [window winRect] = PsychImaging('OpenWindow',screenNumber,128,winSize,[],[],stereoMode);
+    %     gammaTable = [0.5 0.5 0.5];
+    %     Screen('LoadNormalizedGammaTable', window, gammaTable);
+    AssertOpenGL;
+    
+    oldVisualDebugLevel   = Screen('Preference', 'VisualDebugLevel', 3);
+    oldSupressAllWarnings = Screen('Preference', 'SuppressAllWarnings', 1);
+    
+else
+    
+    %     [window winRect] = PsychImaging('OpenWindow',screenNumber,grey,winSize);
+    [window,winRect] = Screen('OpenWindow',screenNumber,128,winSize,[],[],stereoMode);%1024 768
+end
+
+
 [xCenter, yCenter] = RectCenter(winRect);
 [screenXpixels, screenYpixels] = Screen('WindowSize', window);
 [displaywidth, ~] = Screen('DisplaySize', screenNumber);  %
 Screen('TextSize', window, 40);
-% Define black, white and grey
-white = WhiteIndex(screenNumber);
-grey = white / 2;
-black = BlackIndex(screenNumber);
 framerate = FrameRate(window);
 viewingDistance = 60; % subject distance to the screen
 %----------------------------------------------------------------------
@@ -115,35 +139,12 @@ yCenter = yCenter;
 
 barDisFromGaborStartPix = deg2pix(barDisFromGaborStartDeg,viewingDistance,screenXpixels,displaywidth);
 
-
-
-% conditionFreq = (length(gaborMatSingle)*length(gaborDistanceFromFixationDegree));
-% repeatFreq = trialNumber/conditionFreq;
-
-% trial repeatTimes of each combined condition
-
-% repeatTimes = trialNumber/(length(gaborMatSingle) * length(gaborDistanceFromFixationDegree) *...
-%     length(barDisFromGaborStartDeg));
-% randomized the different conditions 4 locations 8 directions
 blockData = [];
 
 [blockData,subData]=randCondi(gaborDistanceFromFixationDegree,gaborMatSingle,...
     barDisFromGaborStartDeg,eyeCFS,trialNumber);
 
-% k = 0;
-% factor1 = [1:length(gaborDistanceFromFixationDegree)]; % blockData 1
-% factor2 = [1:length(gaborMatSingle)]; % blockData 2
-% factor3 = [1:length(barDisFromGaborStartDeg)]; % blockData 3
-% for i1 = 1:length(factor1)
-%     for i2 = 1:length(factor2)
-%         for i3 = 1:length(factor3)
-%             k = k + 1;
-%             pickupData(k,:) = [factor1(i1),factor2(i2),factor3(i3)];
-%         end
-%     end
-% end
-%
-% subData = repmat(pickupData,repeatTimes,1);
+
 
 if debug == 'n'
     blockData = [subData(Shuffle(1:length(subData)),:)];
@@ -151,17 +152,8 @@ elseif debug == 'y'
     blockData = subData;
 end
 
-% 3 means 3 locations  1 is physical  2 mid 3 perceived location
-%  dotLoca = [gaborLocationPhy; gaborEndLocaMid; gaborLocationPerc];
-% dotLocaMat = repmat([1; 2; 3],trialNumber/3,1);
-% dotLocaRand = dotLocaMat(Shuffle(1:length(dotLocaMat)));
 
 barDelay = 1;
-%----------------------------------------------------------------------
-%%%                         CFS represented eye
-%----------------------------------------------------------------------
-
-
 
 
 %----------------------------------------------------------------------
@@ -171,22 +163,15 @@ load /Users/jia/Documents/matlab/DD_illusion/myGabor/function/CFS/CFSMatMovie1.m
 % CFSFrequency= 8;
 CFSMatMovie=Shuffle(CFSMatMovie);
 CFSFrames = 100;
-CFSwidth = 30; %30;
-CFScoverGabor = 25;
+CFSwidth = 60; %30;
+% make sure the gabor was all covered by CFS,CFS started y axis lower than
+% center of gabor start point
+CFScoverGabor = gabor.DimPix/2;
+% CFScoverGabor = 25;
 CFScont = 0.8;
 CFSoffFrame = 15;
 
-% load CFS images and Make Textures
-% CFSsize_scale = 0.8;
-% xsize = 256;
-% ysize = 256;
-% [x2,y2] = meshgrid(-xsize/2:xsize/2-1,-ysize/2:ysize/2-1); % make a axis
-% r2 = sqrt(x2.^2+y2.^2);
-% % pict = 256*rand(ysize,xsize,3);
-% mask2 = r2<xsize/2.*CFSsize_scale;
 
-% pict(:,:,4) = mask2;
-% pict(:,:,4) = uint8(pict(:,:,4)*255);
 for i=1:CFSFrames
     CFSMatMovie{i} =CFScont*(CFSMatMovie{i}-128)+128;
     CFSImage=CFSMatMovie{i};%.*mask+ContraN;
@@ -197,11 +182,14 @@ for i=1:CFSFrames
 end
 
 
+%----------------------------------------------------------------------
+%       draw binocular circles to justify the steroscope
+%----------------------------------------------------------------------
 % Screen('DrawDots', window,[xCenter, yCenter], 10, [255 255 255 255], [], 2);
 Screen('SelectStereoDrawBuffer', window, 0);
-Screen('FrameOval', window, blackColor, [xCenter - 50 yCenter - 50 xCenter + 50  yCenter + 50], 4);
+Screen('FrameOval', window, 60, [xCenter - 50 yCenter - 50 xCenter + 50  yCenter + 50], 4);
 Screen('SelectStereoDrawBuffer', window, 1);
-Screen('FrameOval', window, blackColor, [xCenter - 50 yCenter - 50 xCenter + 50  yCenter + 50], 4);
+Screen('FrameOval', window, 179, [xCenter - 50 yCenter - 50 xCenter + 50  yCenter + 50], 4);
 Screen('Flip', window);
 KbStrokeWait;
 %----------------------------------------------------------------------
@@ -224,9 +212,9 @@ for block = 1: blockNumber
             A2 = blockNumber;
             str = sprintf(formatSpec,A1,A2);
             Screen('SelectStereoDrawBuffer', window, 0);
-            DrawFormattedText(window, str, 'center', 'center', black);
+            DrawFormattedText(window, str, 'center', 'center', blackColor);
             Screen('SelectStereoDrawBuffer', window, 1);
-            DrawFormattedText(window, str, 'center', 'center', black);
+            DrawFormattedText(window, str, 'center', 'center', blackColor);
             Screen('Flip', window);
             KbStrokeWait;
         end
@@ -256,39 +244,27 @@ for block = 1: blockNumber
             % set the middle of the gabor path 7 or 10 dva away from the fixation
             % so the direction of gabor is crossed in the middle of the path
             
-            gaborStartLocMoveXDegree = gabor.pathLengthDegree * sin((subIlluDegree/360)*pi); % (gabor.pathLengthDegree/2)* sin((subIlluDegree/360)*pi);
-            gaborStartLocMoveYDegree = gabor.pathLengthDegree * cos((subIlluDegree/360)*pi); % gabor.pathLengthDegree/2 * cos((subIlluDegree/360)*pi);
-            gaborStartLocMoveXPixel = deg2pix(gaborStartLocMoveXDegree,viewingDistance,screenXpixels,displaywidth);
-            gaborStartLocMoveYPixel = deg2pix(gaborStartLocMoveYDegree,viewingDistance,screenXpixels,displaywidth);
+%             gaborStartLocMoveXDegree = gabor.pathLengthDegree * sin((subIlluDegree/360)*pi); % (gabor.pathLengthDegree/2)* sin((subIlluDegree/360)*pi);
+%             gaborStartLocMoveYDegree = gabor.pathLengthDegree * cos((subIlluDegree/360)*pi); % gabor.pathLengthDegree/2 * cos((subIlluDegree/360)*pi);
+%             gaborStartLocMoveXPixel = deg2pix(gaborStartLocMoveXDegree,viewingDistance,screenXpixels,displaywidth);
+%             gaborStartLocMoveYPixel = deg2pix(gaborStartLocMoveYDegree,viewingDistance,screenXpixels,displaywidth);
             
             
-            
-            % define the tractory of gabor movement   start from xCenter + 7/10 dva +  move gabor's center to the same level of fixation
-            %             gaborLocation = CenterRectOnPointd(gabor.rect, xCenter + gaborfixationFactor * gaborDistanceFromFixationPixel + gaborStartLocMoveXFactor * gaborStartLocMoveXPixel ...
-            %                 + xframeFactor * xframe(frame), yCenter +  gaborStartLocMoveYFactor * gaborStartLocMoveYPixel+  yframeFactor * yframe(frame));
-            gaborLocation = CenterRectOnPointd(gabor.rect, xCenter  + gaborfixationFactor * gaborDistanceFromFixationPixel + gaborStartLocMoveXFactor * gaborStartLocMoveXPixel  ...
-                + xframeFactor * xframe(frame), yCenter +  gaborStartLocMoveYFactor * gaborStartLocMoveYPixel + yframeFactor * yframe(frame));
+            % gabor start at the same location whatever the direction of
+            % rotation is
+            gaborLocation = CenterRectOnPointd(gabor.rect, xCenter  + gaborfixationFactor * gaborDistanceFromFixationPixel   ...
+                + xframeFactor * xframe(frame), yCenter + yframeFactor * yframe(frame));
             
             %----------------------------------------------------------------------
             %                       save the gabor start location
             %----------------------------------------------------------------------
+            %             [gaborLoc] = CFSgaborLocCal(gabor,xCenter,yCenter,gaborDistanceFromFixationPixel,viewingDistance,screenXpixels,displaywidth,framerate);
+            %             [dotXpos_R_st,dotYpos_R_st] = findcenter(gaborLoc.Start_R);
+            %             [dotXpos_L_st,dotYpos_L_st] = findcenter(gaborLoc.Start_L);
+            gaborLoc.Start_x = xCenter  + gaborfixationFactor * gaborDistanceFromFixationPixel + xframeFactor * xframe(1);
+            gaborLoc.Start_y = yCenter + yframeFactor * yframe(1);
             
-            if frame == 1
-                if condition == 'upperRight_rightward'
-                    gaborLoc.Start_R = gaborLocation;
-                    gaborLoc.Start = gaborLoc.Start_R;
-                    [dotXpos_R_st,dotYpos_R_st] = findcenter(gaborLoc.Start_R);
-                elseif  condition == 'upperRight_leftward'
-                    gaborLoc.Start_L = gaborLocation;
-                    gaborLoc.Start = gaborLoc.Start_L;
-                    [dotXpos_L_st,dotYpos_L_st] = findcenter(gaborLoc.Start_L);
-                end
-                
-                
-            end
-            
-            
-            
+          
             %             Screen('DrawTextures', window, gabor.tex, [], gaborLocation, orientation, [], [], [], [],...
             %                 kPsychDontDoRotation, gabor.propertiesMatFirst');
             
@@ -299,40 +275,23 @@ for block = 1: blockNumber
             %                       CFS location
             %----------------------------------------------------------------------
             % generate CFS size and location from the last frame location of gabor
-            frameCFS = round(gabor.stimulusTime * framerate);
-            gaborLocationaCFS = CenterRectOnPointd(gabor.rect, xCenter  + gaborfixationFactor * gaborDistanceFromFixationPixel + gaborStartLocMoveXFactor * gaborStartLocMoveXPixel  ...
-                + xframeFactor * xframe(frameCFS), yCenter +  gaborStartLocMoveYFactor * gaborStartLocMoveYPixel + yframeFactor * yframe(frameCFS));
-            if condition == 'upperRight_rightward'
-                gaborLoc.End_R = gaborLocationaCFS;
-                gaborLoc.End = gaborLoc.End_R;
-                [dotXpos_R_end,dotYpos_R_end] = findcenter(gaborLoc.End_R);
-                % abor full covered
-                if CFScovermark == 'f'
-                    CFSloca_R = [dotXpos_R_end - CFSwidth  dotYpos_R_end - CFScoverGabor  dotXpos_R_st + CFSwidth  dotYpos_R_st + CFScoverGabor];
-                    %                   Gabor partly covered
-                elseif CFScovermark == 'p'
-                    CFSloca_R = [dotXpos_R_end - CFSwidth  dotYpos_R_end  dotXpos_R_st + CFSwidth  dotYpos_R_st + CFScoverGabor];
-                end
-            elseif  condition == 'upperRight_leftward'
-                gaborLoc.End_L = gaborLocationaCFS;
-                gaborLoc.End = gaborLoc.End_L;
-                [dotXpos_L_end,dotYpos_L_end] = findcenter(gaborLoc.End_L);
-                if CFScovermark == 'f'
-                    CFSloca_L = [dotXpos_L_end - CFSwidth  dotYpos_L_end - CFScoverGabor  dotXpos_L_st + CFSwidth  dotYpos_L_st + CFScoverGabor];
-                elseif CFScovermark == 'p'
-                    CFSloca_L = [dotXpos_L_end - CFSwidth  dotYpos_L_end  dotXpos_L_st + CFSwidth  dotYpos_L_st + CFScoverGabor];
-                end
+            % whatever the condition is the CFS field should be same
+            frameMax = ceil(gabor.stimulusTime * framerate) - 1;
+            %             gaborLocationaCFS = CenterRectOnPointd(gabor.rect, xCenter  + gaborfixationFactor * gaborDistanceFromFixationPixel  ...
+            %                 + xframeFactor * xframe(frameCFS), yCenter +  yframeFactor * yframe(frameCFS));
+            
+            gaborLoc.End_x = xCenter  + gaborfixationFactor * gaborDistanceFromFixationPixel + xframeFactor * xframe(frameMax);
+            gaborLoc.End_y = yCenter +  yframeFactor * yframe(frameMax);
+            
+            
+            % gabor full covered
+            if CFScovermark == 'f'
+                CFSloca = [gaborLoc.End_x - CFSwidth  gaborLoc.End_y - CFScoverGabor  gaborLoc.Start_x + CFSwidth  gaborLoc.Start_y + CFScoverGabor];
+                %   upper edge of CFS is at the center of gabor offset endpoint
+            elseif CFScovermark == 'p'
+                CFSloca = [gaborLoc.End_x - CFSwidth  gaborLoc.End_y  gaborLoc.Start_x + CFSwidth  gaborLoc.Start_y + CFScoverGabor];
             end
             
-            %             if condition == 'upperRight_rightward'
-            %                 gaborLoc.Cue_R = cueLocation;
-            %             elseif  condition == 'upperRight_leftward'
-            %                 gaborLoc.Cue_L = cueLocation;
-            %             end
-            
-            
-            % Draw fixation
-            %             Screen('DrawDots', window,[xCenter, yCenter], 10, [255 255 255 255], [], 2);
             %----------------------------------------------------------------------
             %                       drawTexture for each side of screen
             %----------------------------------------------------------------------
@@ -341,41 +300,67 @@ for block = 1: blockNumber
             w = randi(100,1);
             
             % separate main experiment and control experiment
-            if expmark == 3
+            if expmark == 3   % control binocular rivalry without CFS
                 Screen('DrawDots', window,[xCenter, yCenter], 10, [255 255 255 255], [], 2);
                 Screen('DrawTextures', window, gabor.tex, [], gaborLocation, orientation, [], [], [], [],...
                     kPsychDontDoRotation, gabor.propertiesMatFirst');
-            else
+                
+            else  % if expmark == 1 || expmark == 2 
+                
+                %----------------------------------------------------------------------
+                %%%        when expmark == 1|2|4    binocular rivalry
+                %----------------------------------------------------------------------
                 
                 Screen('SelectStereoDrawBuffer', window, eye);  % 0 mean left eye
                 %             Screen('DrawTexture',window,backTex);
                 Screen('DrawDots', window,[xCenter, yCenter], 10, [255 255 255 255], [], 2);
                 Screen('DrawTextures', window, gabor.tex, [], gaborLocation, orientation, [], [], [], [],...
                     kPsychDontDoRotation, gabor.propertiesMatFirst');
+                
                 % 4 grey montage control BR
-                if expmark == 4
-                    [GreyMontageStartX,GreyMontageStartY] = findcenter(gaborLoc.Start);
-                    [GreyMontageEndX,GreyMontageEndY] = findcenter(gaborLoc.End);
-                    GreyMontageRect = [GreyMontageEndX - CFSwidth    GreyMontageEndY  GreyMontageStartX + CFSwidth  GreyMontageStartY + CFScoverGabor];
-                    Screen('FillRect', window, 128, GreyMontageRect);
+            if expmark == 4
+                    
+                Screen('SelectStereoDrawBuffer', window, eye);  % 0 mean left eye
+                %             Screen('DrawTexture',window,backTex);
+                Screen('DrawDots', window,[xCenter, yCenter], 10, [255 255 255 255], [], 2);
+                Screen('DrawTextures', window, gabor.tex, [], gaborLocation, orientation, [], [], [], [],...
+                    kPsychDontDoRotation, gabor.propertiesMatFirst');
+%                     GreyMontageStartX = xCenter  + gaborfixationFactor * gaborDistanceFromFixationPixel + xframeFactor * xframe(1);
+%                     GreyMontageStartY = yCenter + yframeFactor * yframe(1);
+%                     frameGreyMon = ceil(gabor.stimulusTime * framerate) - 1;
+%                     GreyMontageEndX = xCenter  + gaborfixationFactor * gaborDistanceFromFixationPixel + xframeFactor * xframe(frameGreyMon);
+%                     GreyMontageEndY = yCenter + yframeFactor * yframe(frameGreyMon);
+%                     
+%                     GreyMontageRect = [GreyMontageEndX - CFSwidth    GreyMontageEndY  GreyMontageStartX + CFSwidth  GreyMontageStartY + CFScoverGabor];
+%                     
+%                     CFSloca = [gaborLoc.End_x - CFSwidth  gaborLoc.End_y  gaborLoc.Start_x + CFSwidth  gaborLoc.Start_y + CFScoverGabor];
+  
+                    
+                    Screen('SelectStereoDrawBuffer', window, eye); % 1 means right eye   CFS
+                    if frame <= (ceil(gabor.stimulusTime * framerate) - CFSoffFrame);
+                    Screen('FillRect', window, 128, CFSloca);
+                    end
+%                     Screen('DrawTexture',window,CFSTex(w),[],CFSloca);
+                    
+%                     Screen('DrawDots', window,[xCenter, yCenter], 10, [255 255 255 255], [], 2);
                 end
                 
                 
-                Screen('SelectStereoDrawBuffer', window, 1-eye); % 1 means right eye   CFS
+                Screen('SelectStereoDrawBuffer', window, 1 - eye); % 1 means right eye   CFS
                 Screen('DrawDots', window,[xCenter, yCenter], 10, [255 255 255 255], [], 2);
                 %             Screen('DrawTexture',window,backTex);
                 % chose what time the CFS disappear
                 %             control binocular without CFS
                 
                 
-                if frame > (round(gabor.stimulusTime * framerate) - CFSoffFrame)
+                if frame > (ceil(gabor.stimulusTime * framerate) - CFSoffFrame); % gabor.sigma
                     Screen('DrawDots', window,[xCenter, yCenter], 10, [255 255 255 255], [], 2);
                 else
-                    if condition == 'upperRight_rightward'
-                        Screen('DrawTexture',window,CFSTex(w),[],CFSloca_R); % CFSloca_R
-                    elseif  condition == 'upperRight_leftward'
-                        Screen('DrawTexture',window,CFSTex(w),[],CFSloca_L); % ,CFSloca_L   [154.4633  543.7759  204.4633  593.7759]
-                    end
+                    %                     if condition == 'upperRight_rightward'
+                    Screen('DrawTexture',window,CFSTex(w),[],CFSloca); % CFSloca_R
+                    %                     elseif  condition == 'upperRight_leftward'
+                    %                         Screen('DrawTexture',window,CFSTex(w),[],CFSloca_L); % ,CFSloca_L   [154.4633  543.7759  204.4633  593.7759]
+                    %                     end
                 end
             end
             
@@ -384,7 +369,9 @@ for block = 1: blockNumber
             Screen('Flip',window);
         end
         
-        
+        %----------------------------------------------------------------------
+        %%%                         draw fixation dots
+        %----------------------------------------------------------------------
         Screen('SelectStereoDrawBuffer', window, 0);  % 0 mean left eye
         Screen('DrawDots', window,[xCenter, yCenter], 10, [255 255 255 255], [], 2);
         
@@ -392,7 +379,7 @@ for block = 1: blockNumber
         Screen('SelectStereoDrawBuffer', window, 1); % 1 means right eye
         Screen('DrawDots', window,[xCenter, yCenter], 10, [255 255 255 255], [], 2);
         
-        %         Screen('DrawDots', window,[xCenter,  yCenter], 10, [255 255 255 255], [], 2);
+        
         Screen('Flip',window);
         WaitSecs(barDelay);
         
@@ -413,33 +400,22 @@ for block = 1: blockNumber
         t1 = GetSecs;
         respToBeMade = true;
         
-        % set 3 conditions of perceived location test dot
-        %         gaborLocationPhy = gaborLocation;
-        %         gaborLocationPerc = CenterRectOnPointd(gabor.rect, xCenter  + gaborfixationFactor * gaborDistanceFromFixationPixel + gaborStartLocMoveXFactor * gaborStartLocMoveXPixel  ...
-        %             - xframeFactor * xframe(frame), yCenter +  gaborStartLocMoveYFactor * gaborStartLocMoveYPixel + yframeFactor * yframe(frame));
-        %         gaborEndLocaMid = CenterRectOnPointd(gabor.rect, xCenter  + gaborfixationFactor * gaborDistanceFromFixationPixel + gaborStartLocMoveXFactor * gaborStartLocMoveXPixel  ...
-        %             , yCenter +  gaborStartLocMoveYFactor * gaborStartLocMoveYPixel + yframeFactor * yframe(frame));
-        %
-        %         dotLoca = [gaborLocationPhy; gaborEndLocaMid; gaborLocationPerc];
-        %
-        %
-        %         [dotXpos,dotYpos] = findcenter(dotLoca(dotLocaRand(trial),:));
         
         barDisFromGaborStartDegNow = barDisFromGaborStartDeg(blockData(trial,3));
         
         
         moveStep = 1;
         while respToBeMade
-            [gaborLoc.End_R_x, gaborLoc.End_R_y] = findcenter(gaborLocationaCFS);
+            %             [gaborLoc.End_R_x, gaborLoc.End_R_y] = findcenter(gaborLocationaCFS);
             
             Screen('SelectStereoDrawBuffer', window, 0);
             %             Screen('Flip',window);
             Screen('DrawDots', window,[xCenter,   yCenter], 10, [255 255 255 255], [], 2);
-            Screen('DrawLine', window,blackColor,gaborLoc.End_R_x + barDisFromGaborStartPix(blockData(trial,3)), gaborLoc.End_R_y - 15, gaborLoc.End_R_x + barDisFromGaborStartPix(blockData(trial,3)), gaborLoc.End_R_y + 15, 2);
+            Screen('DrawLine', window,blackColor,gaborLoc.End_x + barDisFromGaborStartPix(blockData(trial,3)), gaborLoc.End_y - 15, gaborLoc.End_x + barDisFromGaborStartPix(blockData(trial,3)), gaborLoc.End_y + 15, 2);
             Screen('SelectStereoDrawBuffer', window, 1);
             %             Screen('Flip',window);
             Screen('DrawDots', window,[xCenter,   yCenter], 10, [255 255 255 255], [], 2);
-            Screen('DrawLine', window,blackColor,gaborLoc.End_R_x + barDisFromGaborStartPix(blockData(trial,3)), gaborLoc.End_R_y - 15, gaborLoc.End_R_x + barDisFromGaborStartPix(blockData(trial,3)), gaborLoc.End_R_y + 15, 2);
+            Screen('DrawLine', window,blackColor,gaborLoc.End_x + barDisFromGaborStartPix(blockData(trial,3)), gaborLoc.End_y - 15, gaborLoc.End_x + barDisFromGaborStartPix(blockData(trial,3)), gaborLoc.End_y + 15, 2);
             
             %             [dstRects,flash] = gaussianDot(gauss.dotSizePix,gauss.Dim,dotXpos,dotYpos,grey,whiteColor,gauss.standDevia,gauss.dotFlag);
             %             Screen('BlendFunction', window, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
